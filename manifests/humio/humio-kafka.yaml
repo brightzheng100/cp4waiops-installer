@@ -1,0 +1,71 @@
+# borrowed from what it is in AIOps namespace
+apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  name: kafka-cluster
+  namespace: "$NAMESPACE_HUMIO"
+spec:
+  entityOperator:
+    tlsSidecar:
+      image: docker.io/strimzi/kafka@sha256:961419d795036f5f491817a5652c8f30c531a7b3cafd245d9473812a6a632c19
+    topicOperator:
+      image: docker.io/strimzi/operator@sha256:d8fed9eb28c6d024670b060527681e21c6744a6c7dd2bf48450ce577382d3646
+      resources:
+        limits:
+          cpu: "1"
+          memory: 512Mi
+        requests:
+          cpu: "1"
+          memory: 512Mi
+    userOperator:
+      image: docker.io/strimzi/operator@sha256:d8fed9eb28c6d024670b060527681e21c6744a6c7dd2bf48450ce577382d3646
+      resources:
+        limits:
+          cpu: "1"
+          memory: 512Mi
+        requests:
+          cpu: "1"
+          memory: 512Mi
+  kafka:
+    config:
+      auto.create.topics.enable: false
+      log.message.format.version: "2.4"
+      message.max.bytes: 20000000
+      offsets.topic.replication.factor: 1
+      transaction.state.log.min.isr: 1
+      transaction.state.log.replication.factor: 1
+    image: docker.io/strimzi/kafka@sha256:df7007f48fb49969499b5191188ab299ff460d3bd04b2942b81e44088e5c47b7
+    listeners:
+      plain: {}
+      tls:
+        authentication:
+          type: scram-sha-512
+    replicas: 1
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4000Mi
+      requests:
+        cpu: "2"
+        memory: 4000Mi
+    storage:
+      class: ibmc-file-gold-gid
+      size: 5Gi
+      type: persistent-claim
+    tlsSidecar:
+      image: docker.io/strimzi/kafka@sha256:961419d795036f5f491817a5652c8f30c531a7b3cafd245d9473812a6a632c19
+    version: 2.4.0
+  zookeeper:
+    image: docker.io/strimzi/kafka@sha256:df7007f48fb49969499b5191188ab299ff460d3bd04b2942b81e44088e5c47b7
+    replicas: 1
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4000Mi
+      requests:
+        cpu: "2"
+        memory: 4000Mi
+    storage:
+      class: ibmc-file-gold-gid
+      size: 5Gi
+      type: persistent-claim
