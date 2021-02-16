@@ -32,7 +32,7 @@ export NAMESPACE_HUMIO="${NAMESPACE_HUMIO:-humio}"
 export STORAGECLASS_FILE="${STORAGECLASS_FILE:-ibmc-file-gold-gid}"
 
 #
-# Others
+# Humio
 #
 # Humio Operator Version
-export HUMIO_OPERATOR_VERSION="${HUMIO_OPERATOR_VERSION:-0.4.0}"
+export HUMIO_OPERATOR_VERSION="${HUMIO_OPERATOR_VERSION:-0.5.0}"
