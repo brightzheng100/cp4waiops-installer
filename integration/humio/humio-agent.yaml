@@ -1,0 +1,27 @@
+---
+humio-fluentbit:
+  enabled: true
+  replicas: 1
+  humioRepoName: $HUMIO_REPO_NAME
+  humioHostname: $HUMIO_SERVER_URL
+  es:
+    port: 80
+    tls: false
+    inputConfig: |-
+      [INPUT]
+          Name             tail
+          Path             /var/log/containers/*.log
+          Parser           docker
+          # The path to the DB file must be unique and not conflict with another fluentbit running on the same nodes.
+          DB               /var/log/flb_kube.db
+          Tag              kube.*
+          Refresh_Interval 5
+          Mem_Buf_Limit    512MB
+          Skip_Long_Lines  On
+    resources:
+      limits:
+        cpu: 100m
+        memory: 1024Mi
+      requests:
+        cpu: 100m
+        memory: 512Mi
