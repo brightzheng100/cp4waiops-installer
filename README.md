@@ -18,7 +18,7 @@ Currently there is a minimum set of components included in this installation exe
 
 ## Get Started
 
-**Pre-reqs**
+**Prerequisites**
 
 - `oc` command
 - You must be authenticated to your OpenShift cluster with admin permissions
@@ -27,8 +27,7 @@ Currently there is a minimum set of components included in this installation exe
 
 **Process**
 
-
-### 1. Clone repo locally:
+### 1. Clone the repo to local:
 
 ```sh
 $ git clone https://github.com/brightzheng100/cp4aiops-installer.git
