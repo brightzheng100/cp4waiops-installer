@@ -10,14 +10,21 @@ function install-humio {
   # Install a dedicated Kafka instance powered by Strimzi for Humio
   execlog 'envsubst < manifests/humio/humio-kafka.yaml | oc apply -f -'
 
+  # Install Humio CRDs
+  oc apply -f "https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioclusters.yaml"
+  oc apply -f "https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioexternalclusters.yaml"
+  oc apply -f "https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioingesttokens.yaml"
+  oc apply -f "https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioparsers.yaml"
+  oc apply -f "https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humiorepositories.yaml"
+
   # Add Humio to Helm repo
   execlog "helm repo add humio-operator https://humio.github.io/humio-operator"
   execlog "helm repo update"
 
   # Install Humio Operator by Helm v3+
-  execlog "helm install humio-operator humio-operator/humio-operator --namespace $NAMESPACE_HUMIO --version $HUMIO_OPERATOR_VERSION --set installCRDs=true --set openshift=true"
-  # Create Humio CRs
-  execlog 'envsubst < manifests/humio/humio-cr.yaml | oc apply -f -'
+  execlog "helm install humio-operator humio-operator/humio-operator --namespace $NAMESPACE_HUMIO --version $HUMIO_OPERATOR_VERSION --set openshift=true"
+  # Create Humio Cluster
+  execlog 'envsubst < manifests/humio/humio-cluster.yaml | oc apply -f -'
 }
 
 function how-to-access-humio {
