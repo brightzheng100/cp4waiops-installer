@@ -8,7 +8,7 @@ source 00-setup.sh
 function uninstall-humio {
     # Operators, Instance & Helm Chart
     envsubst < manifests/humio/humio-kafka.yaml | oc delete -f -
-    envsubst < manifests/humio/humio-cr.yaml | oc delete -f -
+    envsubst < manifests/humio/humio-cluster.yaml | oc delete -f -
     helm delete humio-operator --namespace $NAMESPACE_HUMIO
 }
 function uninstall-humio-post-actions {
@@ -20,7 +20,7 @@ function uninstall-humio-post-actions {
     for pvc in "${pvcs[@]}"
     do
         oc patch pvc $pvc -p '{"metadata":{"finalizers":null}}' -n $NAMESPACE_HUMIO
-        oc delete pvc $pvc --grace-period=0 --force -n $NAMESPACE_HUMIO
+        oc delete pvc $pvc --grace-period=0 --force -n $NAMESPACE_HUMIO &
     done
 }
 
@@ -57,7 +57,7 @@ function uninstall-aimanager-post-actions {
     for pvc in "${pvcs[@]}"
     do
         oc patch pvc $pvc -p '{"metadata":{"finalizers":null}}' -n $NAMESPACE_CP4AIOPS
-        oc delete pvc $pvc --grace-period=0 --force -n $NAMESPACE_CP4AIOPS
+        oc delete pvc $pvc --grace-period=0 --force -n $NAMESPACE_CP4AIOPS &
     done
 }
 
