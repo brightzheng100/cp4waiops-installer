@@ -15,8 +15,8 @@ function install-common-services {
     #
     execlog 'envsubst < manifests/common-services-operators.yaml | oc apply -f -'
 
-    # Wait 
-    progress-bar 60
+    # Wait for 1 min
+    progress-bar 1
 
     # Create IBM Licensing instance
     execlog 'envsubst < manifests/common-services-cr.yaml | oc apply -f -'

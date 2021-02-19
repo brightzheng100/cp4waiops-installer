@@ -50,8 +50,8 @@ if [[ " ${SKIP_STEPS[@]} " =~ " CS " ]]; then
 else
     # Install
     install-common-services
-    # Wait for 2mins
-    progress-bar 120
+    # Wait for 2 mins
+    progress-bar 2
     # Check process, with timeout of 2mins
     check-namespaced-pod-status $NAMESPACE_CS 2
 fi
@@ -68,8 +68,8 @@ if [[ " ${SKIP_STEPS[@]} " =~ " AIOPS " ]]; then
 else
     # Install
     install-aiops
-    # Wait for 3mins
-    progress-bar 180
+    # Wait for 3 mins
+    progress-bar 3
     # Check process, with timeout of 3mins
     check-namespaced-pod-status $NAMESPACE_CP4AIOPS 3
 fi
@@ -85,8 +85,8 @@ if [[ " ${SKIP_STEPS[@]} " =~ " EVENTMANAGER " ]]; then
 else
     # Install
     install-event-manager
-    # Wait for 10mins
-    progress-bar 600
+    # Wait for 10 mins
+    progress-bar 10
     # Check process, with timeout of 20mins
     check-namespaced-pod-status $NAMESPACE_CP4AIOPS 20
 fi
@@ -103,16 +103,16 @@ if [[ " ${SKIP_STEPS[@]} " =~ " AIMANAGER " ]]; then
 else
     # Install
     install-aimanager
-    # Wait for 10mins
-    progress-bar 60
+    # Wait for 10 mins
+    progress-bar 10
     # Check pod process, with timeout of 30mins
     check-namespaced-pod-status $NAMESPACE_CP4AIOPS 30
-    # Check further for AIManager's post actions for another 15mins
+    # Check further for AIManager's post actions, with timeout of another 20mins
     check-namespaced-object-presence-and-keep-displaying-logs-lines \
       "$NAMESPACE_CP4AIOPS" \
       'route/ibm-cp4aiops-cpd' \
       "oc logs $( oc get pod -n $NAMESPACE_CP4AIOPS | grep ibm-cp-data-operator | awk {'print $1'} ) -n $NAMESPACE_CP4AIOPS | grep -E '(0010-infra x86_64|0015-setup x86_6|0020-core x86_64)' | tail -3" \
-      15
+      20
 fi
 
 
@@ -127,10 +127,10 @@ if [[ " ${SKIP_STEPS[@]} " =~ " HUMIO " ]]; then
 else
     # Install
     install-humio
-    # Wait for 2mins
-    progress-bar 120
-    # Check pod process, with timeout of 10mins
-    check-namespaced-pod-status $NAMESPACE_HUMIO 10
+    # Wait for 2 mins
+    progress-bar 2
+    # Check pod process, with timeout of 15mins
+    check-namespaced-pod-status $NAMESPACE_HUMIO 15
     # Expose Humio svc "humio-cluster" for both http and es port
     oc expose svc humio-cluster -n $NAMESPACE_HUMIO --port="http"
     oc expose svc humio-cluster -n $NAMESPACE_HUMIO --name=humio-cluster-es --port="es"

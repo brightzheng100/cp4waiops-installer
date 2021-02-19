@@ -28,12 +28,12 @@ function check-namespaced-pod-status {
             oc get po -n $namespace | grep -v 'Running\|Completed'
         fi
 
-        # wait 60 seconds
-        progress-bar 60
+        # wait 1 min
+        progress-bar 1
     done
 
     if [[ "$finished" == "false" ]]; then
-        log "Hmm, timeout!"
+        log "Hmm, timeout after retrying in $timeout_min mins!"
         exit 99
     fi
 }
@@ -64,12 +64,12 @@ function check-namespaced-object-presence {
             echo ""
         fi
 
-        # wait 60 seconds
-        progress-bar 60
+        # wait for 1 min
+        progress-bar 1
     done
 
     if [[ "$finished" == "false" ]]; then
-        log "Hmm, timeout!"
+        log "Hmm, timeout after retrying in $timeout_min mins!"
         exit 99
     fi
 }
@@ -110,12 +110,12 @@ function check-namespaced-object-presence-and-keep-displaying-logs-lines {
             echo ""
         fi
 
-        # wait 60 seconds
-        progress-bar 60
+        # wait 1 min
+        progress-bar 1
     done
 
     if [[ "$finished" == "false" ]]; then
-        log "Hmm, timeout!"
+        log "Hmm, timeout after retrying in $timeout_min mins!"
         exit 99
     fi
 }

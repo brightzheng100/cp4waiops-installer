@@ -21,8 +21,8 @@ uninstall-common-services
 uninstall-aimanager-post-actions
 uninstall-humio-post-actions
 
-# Wait 2mins
-progress-bar 120
+# Wait 2 mins
+progress-bar 2
 
 # Delete projects
 oc delete project $NAMESPACE_HUMIO
