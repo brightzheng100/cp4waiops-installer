@@ -9,8 +9,9 @@ function progress-bar {
   local fit_to_screen  
   local space_reserved
 
-  space_reserved=30   # reserved width for the message like: | 100% - waiting for 20 mins
-  duration=${1}
+  space_reserved=30                     # reserved width for the message like: | 100% - waiting for 20 mins
+  duration=${1}                         # by mins
+  duration=$(( duration*60 ));          # convert it to seconds
   if [[ "$__DEBUG__" == "true" ]]; then # this is for debug mode only to accelerate things
     duration=10; 
   fi  
@@ -20,7 +21,7 @@ function progress-bar {
   if (( duration < space_available )); then 
   	fit_to_screen=1; 
   else 
-    fit_to_screen=$(( duration / space_available )); 
+    fit_to_screen=$(( duration / space_available ));
     fit_to_screen=$((fit_to_screen+1)); 
   fi
 
