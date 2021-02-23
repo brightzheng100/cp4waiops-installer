@@ -115,7 +115,7 @@ So there will be two guides to be developed along the way:
 
 ### Integration Guide
 
-TODO
+**TODO**
 
 ### End-to-end Demo Guide
 
@@ -125,16 +125,24 @@ For example:
 - A demo app -> logs to Humio -> AI Manager for log integration;
 - Same demo app -> Event Manager -> AI Manager for event grouping, topology integration.
 
-TODO
+**TODO**
 
 ## Uninstall
 
 To uninstall, run this:
 
 ```sh
-source _customization.sh && source 00-setup.sh
+source _customization.sh
+
+# To uninstall ALL except Common Services
 ./uninstall.sh
+
+# Or to uninstall ALL including Common Services
+./uninstall.sh all
 ```
+
+> Note: while hosting multiple Cloud Paks into one cluster, think before you delete the Common Services.
+
 
 If you want to uninstall specific component(s), you can do this:
 
