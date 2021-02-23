@@ -77,7 +77,7 @@ spec:
   tls:
     enabled: false
   dataVolumePersistentVolumeClaimSpecTemplate:
-    storageClassName: ibmc-block-gold
+    storageClassName: "$STORAGECLASS_BLOCK"
     accessModes: [ReadWriteOnce]
     resources:
       requests:

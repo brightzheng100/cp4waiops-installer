@@ -61,6 +61,7 @@ export ROKS="true"
 # Storage Classes
 #
 export STORAGECLASS_FILE="ibmc-file-gold-gid"
+export STORAGECLASS_BLOCK="ibmc-block-gold"
 
 EOF
 ```

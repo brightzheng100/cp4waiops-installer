@@ -30,6 +30,7 @@ export NAMESPACE_HUMIO="${NAMESPACE_HUMIO:-humio}"
 # StorageClass
 #
 export STORAGECLASS_FILE="${STORAGECLASS_FILE:-ibmc-file-gold-gid}"
+export STORAGECLASS_BLOCK="${STORAGECLASS_BLOCK:-ibmc-block-gold}"
 
 #
 # Humio
