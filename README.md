@@ -8,6 +8,7 @@ This project is designed to provide an automated, simplified way to install a se
 
 Currently there is a minimum set of components included in this installation exerience, which takes less than 1 hour:
 
+- OpenLDAP as the LDAP server, if required (~3mins)
 - Dependent Common Services (~3mins)
 - Event Manager (~10mins)
 - AI Manager (~30mins)
@@ -45,27 +46,13 @@ It's recommended to compile a local bash file so that we can export all customiz
 
 ```sh
 $ cat > _customization.sh <<EOF
-
 #
 # IBM Entitled Registry Credential
 #
 export ENTITLEMENT_KEY="<YOUR KEY GOES HERE>"
 export ENTITLEMENT_EMAIL="<YOUR EMAIL GOES HERE>"
-
-#
-# Is it ROKS env? It defaults to ROKS but we may set it "false" explicitly
-#
-export ROKS="true"
-
-#
-# Storage Classes
-#
-export STORAGECLASS_FILE="ibmc-file-gold-gid"
-export STORAGECLASS_BLOCK="ibmc-block-gold"
-
 EOF
 ```
-
 
 ### 3. Make sure you are in the project base folder to execute commands
 
