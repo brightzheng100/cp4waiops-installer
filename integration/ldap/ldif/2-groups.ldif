@@ -1,0 +1,13 @@
+dn: cn=admins,ou=people,dc=bright,dc=com
+objectclass: top
+objectClass: groupOfNames
+cn: admins
+member: cn=admin1,ou=people,dc=bright,dc=com
+member: cn=admin2,ou=people,dc=bright,dc=com
+
+dn: cn=developers,ou=people,dc=bright,dc=com
+objectclass: top
+objectClass: groupOfNames
+cn: developers
+member: cn=developer1,ou=people,dc=bright,dc=com
+member: cn=developer2,ou=people,dc=bright,dc=com

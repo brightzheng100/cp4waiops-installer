@@ -1,0 +1,45 @@
+# admin1/secret
+dn: cn=admin1,ou=people,dc=bright,dc=com
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+sn: admin1
+cn: admin1
+uid: admin1
+mail: admin1@bright.com
+# secret, by: slappasswd -h {SSHA} -s secret
+userPassword: {SSHA}RRN6AM9u0tpTEOn6oBcIt9X3BbFPKVk5
+
+# admin2/secret
+dn: cn=admin2,ou=people,dc=bright,dc=com
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+sn: admin2
+cn: admin2
+uid: admin2
+mail: admin2@bright.com
+# secret
+userPassword: {SSHA}RRN6AM9u0tpTEOn6oBcIt9X3BbFPKVk5
+
+# developer1/secret
+dn: cn=developer1,ou=people,dc=bright,dc=com
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+sn: developer1
+cn: developer1
+uid: developer1
+mail: developer1@bright.com
+userPassword: {SSHA}RRN6AM9u0tpTEOn6oBcIt9X3BbFPKVk5
+
+# developer2/secret
+dn: cn=developer2,ou=people,dc=bright,dc=com
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+sn: developer2
+cn: developer2
+uid: developer2
+mail: developer2@bright.com
+userPassword: {SSHA}RRN6AM9u0tpTEOn6oBcIt9X3BbFPKVk5

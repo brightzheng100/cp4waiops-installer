@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: humio
+  namespace: "$NAMESPACE_HUMIO"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: humio
+  namespace: "$NAMESPACE_HUMIO"
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: humio
+  namespace: "$NAMESPACE_HUMIO"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: humio
+subjects:
+- kind: ServiceAccount
+  name: humio
+  namespace: "$NAMESPACE_HUMIO"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: humio
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: humio
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: humio
+subjects:
+- kind: ServiceAccount
+  name: humio
+  namespace: "$NAMESPACE_HUMIO"
+---
+# HumioCluster
+apiVersion: core.humio.com/v1alpha1
+kind: HumioCluster
+metadata:
+  name: humio-cluster
+  namespace: "$NAMESPACE_HUMIO"
+spec:
+  humioServiceAccountName: humio
+  initServiceAccountName: humio
+  authServiceAccountName: humio
+  autoRebalancePartitions: true
+  tls:
+    enabled: false
+  dataVolumePersistentVolumeClaimSpecTemplate:
+    storageClassName: "$STORAGECLASS_BLOCK"
+    accessModes: [ReadWriteOnce]
+    resources:
+      requests:
+        storage: 10Gi
+  environmentVariables:
+    # LDAP start
+    - name: "AUTHENTICATION_METHOD"
+      value: "ldap-search"
+    - name: "LDAP_AUTH_PROVIDER_URL"
+      value: "ldap://openldap.ldap.svc:389"
+    - name: "LDAP_DOMAIN_NAME"
+      value: "bright.com"
+
+    - name: "LDAP_SEARCH_BIND_NAME"
+      value: "cn=admin,dc=bright,dc=com"
+    - name: "LDAP_SEARCH_BIND_PASSWORD"
+      value: "Passw0rd"
+
+    - name: "LDAP_SEARCH_BASE_DN"
+      value: "ou=people,dc=bright,dc=com"
+    - name: "LDAP_GROUP_BASE_DN"
+      value: "ou=people,dc=bright,dc=com"
+    - name: "LDAP_SEARCH_FILTER"
+      #value: "(&(objectClass=person)(uid={0}))"
+      value: "(&(objectClass=inetOrgPerson)(|(uid={0})(mail={0})))"
+    - name: "LDAP_USERNAME_ATTRIBUTE"
+      value: "uid"
+    - name: "LDAP_GROUPNAME_ATTRIBUTE"
+      value: "cn"
+    - name: "LDAP_GROUP_FILTER"
+      value: "(&(objectClass=groupOfNames)(member={0}))"
+    - name: "AUTO_CREATE_USER_ON_SUCCESSFUL_LOGIN"
+      value: "false"
+    # LDAP end
+    
+    - name: "HUMIO_JVM_ARGS"
+      value: "-Xss2m -Xms256m -Xmx1536m -server -XX:+UseParallelOldGC -XX:+ScavengeBeforeFullGC -XX:+DisableExplicitGC -Dzookeeper.client.secure=false"
+    - name: "ZOOKEEPER_URL"
+      value: "kafka-cluster-zookeeper-client.humio.svc:2181"
+    - name: "KAFKA_SERVERS"
+      value: "kafka-cluster-kafka-bootstrap.humio.svc:9092"

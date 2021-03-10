@@ -1,0 +1,5 @@
+dn: ou=people,dc=bright,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+description: All people in the organization
