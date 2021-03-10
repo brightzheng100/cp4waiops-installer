@@ -2,15 +2,15 @@
 apiVersion: core.humio.com/v1alpha1
 kind: HumioRepository
 metadata:
-  name: humio-repository
+  name: logs
   namespace: "$NAMESPACE_HUMIO"
 spec:
   managedClusterName: humio-cluster
-  name: humio-repository
-  description: "Humio Repository"
+  name: logs
+  description: "My Repository"
   retention:
-    timeInDays: 10
-    ingestSizeInGB: 10
+    timeInDays: 30
+    ingestSizeInGB: 50
     storageSizeInGB: 10
 ---
 # HumioParser
@@ -22,7 +22,7 @@ metadata:
 spec:
   managedClusterName: humio-cluster
   name: fluentbit-parser
-  repositoryName: humio-repository
+  repositoryName: logs
   parserScript: |
     case {
       kubernetes.pod_name=/fluentbit/
@@ -42,6 +42,6 @@ metadata:
 spec:
   managedClusterName: humio-cluster
   name: fluentbit-ingest-token
-  repositoryName: humio-repository
+  repositoryName: logs
   parserName: fluentbit-parser
   tokenSecretName: fluentbit-ingest-token
