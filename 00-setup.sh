@@ -37,3 +37,6 @@ export STORAGECLASS_BLOCK="${STORAGECLASS_BLOCK:-ibmc-block-gold}"
 #
 # Humio Operator Version
 export HUMIO_OPERATOR_VERSION="${HUMIO_OPERATOR_VERSION:-0.5.0}"
+# Variable to control whether to integrate with LDAP
+# Making it true will spin up the OpenLDAP in namespace "ldap", populated with data from integration/ldap/ldif/*.ldif
+export HUMIO_WITH_LDAP_INTEGRATED="${HUMIO_WITH_LDAP_INTEGRATED:-false}"

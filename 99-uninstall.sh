@@ -72,3 +72,9 @@ function uninstall-common-services {
     envsubst < manifests/common-services-cr.yaml | oc delete -f -
     envsubst < manifests/common-services-operators.yaml | oc delete -f -
 }
+
+# LDAP
+function uninstall-ldap {
+    oc -n ldap delete -f integration/ldap/openldap.yaml
+    oc delete project ldap
+}

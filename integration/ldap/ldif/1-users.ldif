@@ -22,6 +22,8 @@ mail: admin2@bright.com
 # secret
 userPassword: {SSHA}RRN6AM9u0tpTEOn6oBcIt9X3BbFPKVk5
 
+########################################
+
 # developer1/secret
 dn: cn=developer1,ou=people,dc=bright,dc=com
 objectClass: top

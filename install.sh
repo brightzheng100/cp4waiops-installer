@@ -2,6 +2,7 @@
 
 source 00-setup.sh
 source 10-common-services.sh
+source 11-ldap.sh
 source 20-aiops.sh
 source 30-event-manager.sh
 source 40-aimanager.sh
@@ -61,6 +62,27 @@ else
     progress-bar 2
     # Check process, with timeout of 2mins
     check-namespaced-pod-status $NAMESPACE_CS 2
+fi
+
+###
+#
+# 11. LDAP, only when required
+# 
+# As of now, LDAP can be the dependency of:
+# - Humio 
+# 
+############################################################
+log "----------- 1x. Dependencies, only when required --------------"
+if [[ "$HUMIO_WITH_LDAP_INTEGRATED" == "true" ]]; then
+log "----------- 11. LDAP --------------"
+    # Install
+    install-ldap
+    # Wait for 1 mins
+    progress-bar 1
+    # Check process, with timeout of 5mins
+    check-namespaced-pod-status ldap 5
+    # Post actions to populate data
+    install-ldap-post
 fi
 
 
