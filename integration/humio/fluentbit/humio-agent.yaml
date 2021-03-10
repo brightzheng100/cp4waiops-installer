@@ -2,11 +2,9 @@
 humio-fluentbit:
   enabled: true
   replicas: 1
-  humioRepoName: $HUMIO_REPO_NAME
-  humioHostname: $HUMIO_SERVER_URL
+  humioRepoName: $HUMIO_REPO
+  humioHostname: $HUMIO_SERVER
   es:
-    port: 80
-    tls: false
     inputConfig: |-
       [INPUT]
           Name             tail
