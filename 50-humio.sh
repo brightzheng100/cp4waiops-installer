@@ -48,21 +48,21 @@ function how-to-access-humio {
   local url="$( oc get route -n $NAMESPACE_HUMIO humio-cluster -o json | jq -r .spec.host )"
 
   if [[ "${HUMIO_WITH_LDAP_INTEGRATED}" == "true" ]]; then
-    local password="secret" # it's hardcoded in integration/ldap/ldif/*.ldif
+    local password="secret"     # it's hardcoded in integration/ldap/ldif/*.ldif
+    local POD=$(oc -n ldap get pod -l app.kubernetes.io/name=openldap -o jsonpath="{.items[0].metadata.name}")
 
     log "========================================================"
     log "Since LDAP is integrated, all these accounts can be used to access Humio:"
     log "- URL: $url"
     log "- password: secret"
     log "- admin users:"
-    local adminpassword=Passw0rd
-    execlog "oc -n ldap exec $POD -- ldapsearch -LLL -x -H ldap:// -D \"cn=admin,dc=bright,dc=com\" -w $adminpassword -b \"ou=people,dc=bright,dc=com\" \"(uid=admin*)\" uid | grep \"uid:\" | cut -d: -f2"
+    execlog "oc -n ldap exec $POD -- ldapsearch -LLL -x -H ldap:// -D \"cn=admin,dc=bright,dc=com\" -w $LDAP_ADMIN_PASSWORD -b \"ou=people,dc=bright,dc=com\" \"(uid=admin*)\" uid | grep \"uid:\" | cut -d: -f2"
     log "- normal users:"
-    execlog "oc -n ldap exec $POD -- ldapsearch -LLL -x -H ldap:// -D \"cn=admin,dc=bright,dc=com\" -w $adminpassword -b \"ou=people,dc=bright,dc=com\" \"(uid=developer*)\" uid | grep \"uid:\" | cut -d: -f2"
+    execlog "oc -n ldap exec $POD -- ldapsearch -LLL -x -H ldap:// -D \"cn=admin,dc=bright,dc=com\" -w $LDAP_ADMIN_PASSWORD -b \"ou=people,dc=bright,dc=com\" \"(uid=developer*)\" uid | grep \"uid:\" | cut -d: -f2"
     log "========================================================"
   else
     local username="developer"
-    local password="password" # it's hardcoded in "humio-cr.yaml" for now:)
+    local password="password"     # it's hardcoded in "humio-cr.yaml" for now:)
     
     log "========================================================"
     log "Here is the info for how to access Humio:"

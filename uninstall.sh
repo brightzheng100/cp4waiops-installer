@@ -33,5 +33,9 @@ progress-bar 2
 oc delete project $NAMESPACE_HUMIO
 oc delete project $NAMESPACE_CP4AIOPS
 if [[ "$all" == "all" ]]; then
-oc delete project $NAMESPACE_CS
+    # LDAP
+    uninstall-ldap
+
+    # NOTE: Delete CS namespace which may impact other services
+    oc delete project $NAMESPACE_CS
 fi

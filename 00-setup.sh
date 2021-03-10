@@ -33,6 +33,11 @@ export STORAGECLASS_FILE="${STORAGECLASS_FILE:-ibmc-file-gold-gid}"
 export STORAGECLASS_BLOCK="${STORAGECLASS_BLOCK:-ibmc-block-gold}"
 
 #
+# LDAP
+#
+export LDAP_ADMIN_PASSWORD="${LDAP_ADMIN_PASSWORD:-Passw0rd}"
+
+#
 # Humio
 #
 # Humio Operator Version
