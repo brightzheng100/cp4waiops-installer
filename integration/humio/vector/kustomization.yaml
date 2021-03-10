@@ -1,0 +1,24 @@
+# Override the namespace of all of the resources we manage.
+namespace: humio
+
+bases:
+  # Include Vector recommended base (from git).
+  - github.com/timberio/vector/distribution/kubernetes/vector-agent?ref=v0.11
+
+images:
+  # Override the Vector image to avoid use of the sliding tag.
+  - name: timberio/vector
+    newName: timberio/vector
+    newTag: 0.11.X-debian
+
+resources: []
+
+configMapGenerator:
+  # Provide a custom `ConfigMap` for Vector.
+  - name: vector-agent-config
+    files:
+      - vector-agent.toml
+
+generatorOptions:
+  # We do not want a suffix at the `ConfigMap` name.
+  disableNameSuffixHash: true

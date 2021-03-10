@@ -1,0 +1,12 @@
+# The Vector Kubernetes integration automatically defines a
+# `kubernetes_logs` source that is made available to you.
+# You do not need to define a log source.
+
+[sources.kubernetes_logs]
+type = "kubernetes_logs"
+
+[sinks.out]
+type = "humio_logs"
+inputs = [ "kubernetes_logs" ]
+token = "${HUMIO_TOKEN}"
+encoding.codec = "json"
