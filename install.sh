@@ -41,6 +41,7 @@ log "Great! Let's proceed the installation... "
 #
 log "----------- 00. Prerequisites, if any --------------"
 if [[ "${ROKS}" != "false" ]]; then 
+log "----------- 01. StorageClasses in ROKS on Classic Infra --------------"
   # Change the default storageclass to ibmc-file-gold-gid
   execlog "oc patch storageclass/ibmc-block-gold -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"false\"}}}'"
   execlog "oc patch storageclass/ibmc-file-gold-gid -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
@@ -71,10 +72,10 @@ if [[ " ${SKIP_STEPS[@]} " =~ " CS " ]]; then
 else
     # Install
     install-common-services
-    # Wait for 2 mins
-    progress-bar 2
-    # Check process, with timeout of 2mins
-    check-namespaced-pod-status $NAMESPACE_CS 2
+    # Wait for 5 mins
+    progress-bar 5
+    # Check process, with timeout of 5mins, for expected 2 pods
+    check-namespaced-pod-status $NAMESPACE_CS 5 2
 fi
 
 ###
@@ -95,8 +96,8 @@ if [[ "$HUMIO_WITH_LDAP_INTEGRATED" == "true" ]]; then
         install-ldap
         # Wait for 1 mins
         progress-bar 1
-        # Check process, with timeout of 5mins
-        check-namespaced-pod-status $NAMESPACE_LDAP 5
+        # Check process, with timeout of 5mins, for expected 1 pods
+        check-namespaced-pod-status $NAMESPACE_LDAP 5 1
         # Post actions to populate data
         install-ldap-post
     fi
@@ -114,10 +115,10 @@ if [[ " ${SKIP_STEPS[@]} " =~ " AIOPS " ]]; then
 else
     # Install
     install-aiops
-    # Wait for 3 mins
-    progress-bar 3
-    # Check process, with timeout of 3mins
-    check-namespaced-pod-status $NAMESPACE_CP4AIOPS 3
+    # Wait for 5 mins
+    progress-bar 5
+    # Check process, with timeout of 5mins, for expected 3 more pods in namespace
+    check-namespaced-pod-status $NAMESPACE_CP4AIOPS 5 3
 fi
 
 ###
@@ -133,8 +134,8 @@ else
     install-event-manager
     # Wait for 10 mins
     progress-bar 10
-    # Check process, with timeout of 20mins
-    check-namespaced-pod-status $NAMESPACE_CP4AIOPS 20
+    # Check process, with timeout of 30mins, for expected 80 more pods in namespace
+    check-namespaced-pod-status $NAMESPACE_CP4AIOPS 30 80
 fi
 
 
@@ -151,14 +152,16 @@ else
     install-aimanager
     # Wait for 10 mins
     progress-bar 10
-    # Check pod process, with timeout of 30mins
-    check-namespaced-pod-status $NAMESPACE_CP4AIOPS 30
-    # Check further for AIManager's post actions, with timeout of another 20mins
+    # Check pod process, with timeout of 30mins, for expected 140 more pods in namespace
+    check-namespaced-pod-status $NAMESPACE_CP4AIOPS 30 140
+    # Wait for 10 mins
+    progress-bar 10
+    # Check further for AIManager's post actions, with timeout of another 15mins
     check-namespaced-object-presence-and-keep-displaying-logs-lines \
       "$NAMESPACE_CP4AIOPS" \
       'route/ibm-cp4aiops-cpd' \
       "oc logs $( oc get pod -n $NAMESPACE_CP4AIOPS | grep ibm-cp-data-operator | awk {'print $1'} ) -n $NAMESPACE_CP4AIOPS | grep -E '(0010-infra x86_64|0015-setup x86_6|0020-core x86_64)' | tail -3" \
-      20
+      15
 fi
 
 
@@ -175,8 +178,8 @@ else
     install-humio
     # Wait for 2 mins
     progress-bar 2
-    # Check pod process, with timeout of 15mins
-    check-namespaced-pod-status $NAMESPACE_HUMIO 15
+    # Check pod process, with timeout of 15mins, for expected 7 pods
+    check-namespaced-pod-status $NAMESPACE_HUMIO 15 7
     # Post actions
     install-humio-post-actions
     # Expose Humio svc "humio-cluster" for both http and es port

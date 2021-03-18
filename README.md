@@ -4,7 +4,7 @@
 
 ## Overview
 
-This project is designed to provide an automated, simplified way to install a set of desired components of the IBM Watson AIOps v2.1.x, for POC / demo purposes only, on ROKS.
+This project is designed to provide an automated, simplified way to install a set of desired components of the IBM Watson AIOps v2.1.x, for POC / demo purposes only, on ROKS with classic infra.
 
 Currently there is a minimum set of components included in this installation exerience, which takes less than 1 hour:
 
@@ -67,12 +67,12 @@ $ ./install.sh
 > Important Notes: 
 > 1. A `install-<YYYY-mm-dd>.log` file will be generated to log the installation activities within the `_logs` folder under current folder, but you can change the folder by `export LOGDIR=<somewhere else>`;
 > 2. To facilitate the retry UX, there is a way to skip some steps by exporting a list of `SKIP_STEPS`. For example: `export SKIP_STEPS="CS AIOPS"` is to instruct the installation process to skip installing `Common Services` and `AI Ops` objects. The available named steps are: 
->   - CS: Common Services
->   - LDAP: Dependent LDAP service, if needed
->   - AIOPS: AI Ops
->   - EVENTMANAGER: Event Manager
->   - AIMANAGER: AI Manager
->   - HUMIO: Humio
+>    - CS: Common Services
+>    - LDAP: Dependent LDAP service, if needed
+>    - AIOPS: AI Ops
+>    - EVENTMANAGER: Event Manager
+>    - AIMANAGER: AI Manager
+>    - HUMIO: Humio
 
 
 ### 4. How to access?
@@ -92,6 +92,10 @@ how-to-access-event-manager
 # Display how to access AIManager
 source 40-aimanager.sh
 how-to-access-aimanager
+
+# Display how to access Humio
+source 50-humio.sh
+how-to-access-humio
 ```
 
 ## What's Next?

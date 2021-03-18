@@ -6,9 +6,11 @@
 function check-namespaced-pod-status {
     local namespace="$1"
     local timeout_min=$2
-    #local total_pods="$3"
-    local wc_all
-    local wc_remaining
+    local expected_pods_min="${3:-1}"           # optional, defaults to 1
+
+    local wc_all=0
+    local wc_remaining=0
+
     log "--------------------------"
 
     finished=false
@@ -16,9 +18,9 @@ function check-namespaced-pod-status {
         wc_all="`oc get po --no-headers=true -n $namespace | grep 'Running\|Completed' | wc -l  | xargs`"
         wc_remaining="`oc get po --no-headers=true -n $namespace | grep -v 'Running\|Completed' | wc -l | xargs`"
         
-        log "Waiting for pods in ns ($namespace) to be running/completed... recheck in $time of $timeout_min mins: total = $wc_all; remaining = $wc_remaining"
+        log "Waiting for pods in ns ($namespace) to be running/completed: expected >= $expected_pods_min; current = $wc_all; ongoing = $wc_remaining... recheck in $time of $timeout_min mins"
         
-        if [ $wc_remaining -le 0 ]; then
+        if [ $wc_remaining -le 0 ] && [ $wc_all -ge $expected_pods_min ]; then
             # no more remaining
             finished=true
             log "DONE!"
