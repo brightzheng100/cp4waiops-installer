@@ -17,7 +17,12 @@ function install-humio {
   execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioparsers.yaml"
   execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humiorepositories.yaml"
   execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioviews.yaml"
-
+  # starting from v0.6.x
+  if [[ ! "$HUMIO_OPERATOR_VERSION" < "0.6.0" ]]; then
+  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioalerts.yaml"
+  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioactions.yaml"
+  fi
+  
   # Add Humio to Helm repo
   execlog "helm repo add humio-operator https://humio.github.io/humio-operator"
   execlog "helm repo update"
@@ -39,8 +44,13 @@ function install-humio-post-actions {
     local POD=$(oc -n $NAMESPACE_HUMIO get pod -l app.kubernetes.io/instance=humio-cluster -o jsonpath="{.items[0].metadata.name}")
     local TOKEN=$(oc -n $NAMESPACE_HUMIO exec $POD -c auth -- cat /data/humio-data/local-admin-token.txt)
 
-    execlog oc -n $NAMESPACE_HUMIO exec $POD -c auth -- curl -s http://127.0.0.1:8080/api/v1/users -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d "{\"email\": \"admin1\", \"isRoot\": true}"
-    execlog oc -n $NAMESPACE_HUMIO exec $POD -c auth -- curl -s http://127.0.0.1:8080/api/v1/users -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d "{\"email\": \"admin2\", \"isRoot\": true}"
+    oc -n $NAMESPACE_HUMIO exec $POD -c auth -- curl -s http://127.0.0.1:8080/api/v1/users -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d '{"email": "admin1", "isRoot": true}'
+    echo ""
+    log "admin1 has been promoted as admin"
+    oc -n $NAMESPACE_HUMIO exec $POD -c auth -- curl -s http://127.0.0.1:8080/api/v1/users -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d '{"email": "admin2", "isRoot": true}'
+    echo ""
+    log "admin2 has been promoted as admin"
+
   fi
 }
 
