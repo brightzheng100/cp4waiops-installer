@@ -68,6 +68,7 @@ $ ./install.sh
 > 1. A `install-<YYYY-mm-dd>.log` file will be generated to log the installation activities within the `_logs` folder under current folder, but you can change the folder by `export LOGDIR=<somewhere else>`;
 > 2. To facilitate the retry UX, there is a way to skip some steps by exporting a list of `SKIP_STEPS`. For example: `export SKIP_STEPS="CS AIOPS"` is to instruct the installation process to skip installing `Common Services` and `AI Ops` objects. The available named steps are: 
 >   - CS: Common Services
+>   - LDAP: Dependent LDAP service, if needed
 >   - AIOPS: AI Ops
 >   - EVENTMANAGER: Event Manager
 >   - AIMANAGER: AI Manager

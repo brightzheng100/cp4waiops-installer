@@ -21,6 +21,8 @@ log " The Namespace for Humio Services   = $NAMESPACE_HUMIO"
 log " The StorageClass for File          = $STORAGECLASS_FILE"
 log " The StorageClass for Block         = $STORAGECLASS_BLOCK"
 log "---------"
+log " HUMIO_WITH_LDAP_INTEGRATED         = $HUMIO_WITH_LDAP_INTEGRATED"
+log "---------"
 log " The to-be-skipped steps            = $SKIP_STEPS"
 log " The logs file                      = $LOGFILE"
 log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -32,6 +34,17 @@ if [ "$answer" != "Y" -a "$answer" != "y" ]; then
 fi
 
 log "Great! Let's proceed the installation... "
+
+#
+# 00. Prerequisites
+# - If running in ROKS, let's explicitly set the default storageclass to ibmc-file-gold-gid
+#
+log "----------- 00. Prerequisites, if any --------------"
+if [[ "${ROKS}" != "false" ]]; then 
+  # Change the default storageclass to ibmc-file-gold-gid
+  execlog "oc patch storageclass/ibmc-block-gold -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"false\"}}}'"
+  execlog "oc patch storageclass/ibmc-file-gold-gid -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
+fi
 
 #
 # To facilitate the install UX, there is a way to skip some steps for a better retry
@@ -74,15 +87,19 @@ fi
 ############################################################
 log "----------- 1x. Dependencies, only when required --------------"
 if [[ "$HUMIO_WITH_LDAP_INTEGRATED" == "true" ]]; then
-log "----------- 11. LDAP --------------"
-    # Install
-    install-ldap
-    # Wait for 1 mins
-    progress-bar 1
-    # Check process, with timeout of 5mins
-    check-namespaced-pod-status ldap 5
-    # Post actions to populate data
-    install-ldap-post
+    log "----------- 11. LDAP --------------"
+    if [[ " ${SKIP_STEPS[@]} " =~ " LDAP " ]]; then
+        log "----------- SKIPPED --------------"
+    else
+        # Install
+        install-ldap
+        # Wait for 1 mins
+        progress-bar 1
+        # Check process, with timeout of 5mins
+        check-namespaced-pod-status $NAMESPACE_LDAP 5
+        # Post actions to populate data
+        install-ldap-post
+    fi
 fi
 
 
@@ -160,6 +177,8 @@ else
     progress-bar 2
     # Check pod process, with timeout of 15mins
     check-namespaced-pod-status $NAMESPACE_HUMIO 15
+    # Post actions
+    install-humio-post-actions
     # Expose Humio svc "humio-cluster" for both http and es port
     oc expose svc humio-cluster -n $NAMESPACE_HUMIO --port="http"
     oc expose svc humio-cluster -n $NAMESPACE_HUMIO --name=humio-cluster-es --port="es"

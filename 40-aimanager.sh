@@ -4,15 +4,6 @@ source lib/utils.sh
 source lib/status.sh
 
 function install-aimanager {
-  #
-  # If running in ROKS, let's explicitly set the default storageclass to ibmc-file-gold-gid
-  #
-  if [[ "${ROKS}" != "false" ]]; then 
-    # Change the default storageclass to ibmc-file-gold-gid
-    execlog "oc patch storageclass/ibmc-block-gold -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"false\"}}}'"
-    execlog "oc patch storageclass/ibmc-file-gold-gid -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
-  fi
-
   # Delete `aimanager` operator from `ibm-watson-aiops-catalog`
   execlog "oc delete Subscription aimanager-operator-v1.0-ibm-watson-aiops-catalog-openshift-marketplace -n $NAMESPACE_CP4AIOPS | true"
   execlog "oc delete csv aimanager-operator.v1.0.0 -n $NAMESPACE_CP4AIOPS | true"

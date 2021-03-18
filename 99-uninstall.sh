@@ -75,6 +75,6 @@ function uninstall-common-services {
 
 # LDAP
 function uninstall-ldap {
-    oc -n ldap delete -f integration/ldap/openldap.yaml
-    oc delete project ldap
+    oc -n $NAMESPACE_LDAP delete -f integration/ldap/openldap.yaml
+    oc delete project $NAMESPACE_LDAP
 }
