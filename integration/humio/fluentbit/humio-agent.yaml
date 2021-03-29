@@ -23,3 +23,8 @@ humio-fluentbit:
       requests:
         cpu: 100m
         memory: 512Mi
+  # starts from humio/humio-helm-charts v0.8.25
+  securityContext:
+    privileged: true
+  scc:
+    enabled: true
