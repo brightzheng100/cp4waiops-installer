@@ -111,6 +111,8 @@ spec:
       value: "(&(objectClass=groupOfNames)(member={0}))"
     - name: "AUTO_CREATE_USER_ON_SUCCESSFUL_LOGIN"
       value: "true"
+    - name: "AUTO_UPDATE_GROUP_MEMBERSHIPS_ON_SUCCESSFUL_LOGIN"
+      value: "true"
     # LDAP end
     
     - name: "HUMIO_JVM_ARGS"
