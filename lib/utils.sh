@@ -40,13 +40,11 @@ function progress-bar {
 }
 
 function log {
-    echo "$(date +"%Y-%m-%d %H:%M:%S %Z"): $@"
-    echo "$(date +"%Y-%m-%d"): $@" >> $LOGFILE
+    echo "$(date +"%Y-%m-%d %H:%M:%S %Z"): $@" | tee -a $LOGFILE
 }
 
 function logn {
-    echo -n "$(date +"%Y-%m-%d %H:%M:%S %Z"): $@"
-    echo "$(date +"%Y-%m-%d"): $@" >> $LOGFILE
+    echo -n "$(date +"%Y-%m-%d %H:%M:%S %Z"): $@" | tee -a $LOGFILE
 }
 
 function execlog {
