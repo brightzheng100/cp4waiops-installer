@@ -13,26 +13,6 @@ spec:
     ingestSizeInGB: 50
     storageSizeInGB: 10
 ---
-# HumioParser
-apiVersion: core.humio.com/v1alpha1
-kind: HumioParser
-metadata:
-  name: fluentbit-parser
-  namespace: "$NAMESPACE_HUMIO"
-spec:
-  managedClusterName: humio-cluster
-  name: fluentbit-parser
-  repositoryName: logs
-  parserScript: |
-    case {
-      kubernetes.pod_name=/fluentbit/
-        | /\[(?<@timestamp>[^\]]+)\]/
-        | /^(?<@timestamp>.*)\[warn\].*/
-        | parseTimestamp(format="yyyy/MM/dd' 'HH:mm:ss", field=@timestamp);
-      parseJson();
-      * | kvParse()
-    }
----
 # HumioIngestToken
 apiVersion: core.humio.com/v1alpha1
 kind: HumioIngestToken
@@ -43,5 +23,4 @@ spec:
   managedClusterName: humio-cluster
   name: fluentbit-ingest-token
   repositoryName: logs
-  parserName: fluentbit-parser
   tokenSecretName: fluentbit-ingest-token
