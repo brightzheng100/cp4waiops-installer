@@ -8,7 +8,7 @@
 #
 # So in our example, we need 3 groups:
 #   logs.admins, for admin1/admin2
-#   logs.members, for admin1/admin2
+#   logs.members, for admin1/admin2/developer1/developer2
 #   logs.eliminators, for developer1/developer2
 #
 
