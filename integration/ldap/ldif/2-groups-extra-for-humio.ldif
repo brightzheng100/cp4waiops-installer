@@ -1,0 +1,34 @@
+#
+# Like it or not, Humio has special arrangements for groups
+# 
+# In general, it requires 3 groups to be named like this:
+#   <REPO>.admins
+#   <REPO>.members
+#   <REPO>.eliminators
+#
+# So in our example, we need 3 groups:
+#   logs.admins, for admin1/admin2
+#   logs.members, for admin1/admin2
+#   logs.eliminators, for developer1/developer2
+#
+
+dn: cn=logs.admins,ou=people,dc=bright,dc=com
+objectclass: top
+objectClass: groupOfNames
+cn: logs.admins
+member: cn=admin1,ou=people,dc=bright,dc=com
+member: cn=admin2,ou=people,dc=bright,dc=com
+
+dn: cn=logs.members,ou=people,dc=bright,dc=com
+objectclass: top
+objectClass: groupOfNames
+cn: logs.members
+member: cn=admin1,ou=people,dc=bright,dc=com
+member: cn=admin2,ou=people,dc=bright,dc=com
+
+dn: cn=logs.eliminators,ou=people,dc=bright,dc=com
+objectclass: top
+objectClass: groupOfNames
+cn: logs.eliminators
+member: cn=developer1,ou=people,dc=bright,dc=com
+member: cn=developer2,ou=people,dc=bright,dc=com
