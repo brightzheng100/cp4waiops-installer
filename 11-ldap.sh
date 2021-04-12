@@ -33,6 +33,11 @@ function install-ldap-post {
     execlog oc -n $NAMESPACE_LDAP exec $POD -- ldapadd -x -D "cn=admin,dc=bright,dc=com" -w $LDAP_ADMIN_PASSWORD -H ldap:// -f /ldif/1-users.ldif
     execlog oc -n $NAMESPACE_LDAP exec $POD -- ldapadd -x -D "cn=admin,dc=bright,dc=com" -w $LDAP_ADMIN_PASSWORD -H ldap:// -f /ldif/2-groups.ldif
 
+    # If LDAP is required: HUMIO_WITH_LDAP_INTEGRATED is true
+    if [[ "${HUMIO_WITH_LDAP_INTEGRATED}" == "true" ]]; then
+    execlog oc -n $NAMESPACE_LDAP exec $POD -- ldapadd -x -D "cn=admin,dc=bright,dc=com" -w $LDAP_ADMIN_PASSWORD -H ldap:// -f /ldif/2-groups-extra-for-humio.ldif
+    fi
+
     # Verify the entities
     execlog oc -n $NAMESPACE_LDAP exec $POD -- ldapsearch -LLL -x -H ldap:// -D "cn=admin,dc=bright,dc=com" -w $LDAP_ADMIN_PASSWORD -b "ou=people,dc=bright,dc=com" dn
 }
