@@ -25,6 +25,8 @@ objectClass: groupOfNames
 cn: logs.members
 member: cn=admin1,ou=people,dc=bright,dc=com
 member: cn=admin2,ou=people,dc=bright,dc=com
+member: cn=developer1,ou=people,dc=bright,dc=com
+member: cn=developer2,ou=people,dc=bright,dc=com
 
 dn: cn=logs.eliminators,ou=people,dc=bright,dc=com
 objectclass: top
