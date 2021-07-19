@@ -70,6 +70,8 @@ metadata:
   name: humio-cluster
   namespace: "$NAMESPACE_HUMIO"
 spec:
+  # in operator v0.6.1 the default image is: humio/humio-core:1.20.1
+  image: humio/humio-core:1.25.3
   humioServiceAccountName: humio
   initServiceAccountName: humio
   authServiceAccountName: humio
@@ -121,3 +123,7 @@ spec:
       value: "kafka-cluster-zookeeper-client.humio.svc:2181"
     - name: "KAFKA_SERVERS"
       value: "kafka-cluster-kafka-bootstrap.humio.svc:9092"
+
+    # Feature switches
+    - name: "ENABLE_EVENT_FORWARDING"
+      value: "true"

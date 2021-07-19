@@ -91,3 +91,7 @@ spec:
       value: "kafka-cluster-zookeeper-client.humio.svc:2181"
     - name: "KAFKA_SERVERS"
       value: "kafka-cluster-kafka-bootstrap.humio.svc:9092"
+
+    # Feature switches
+    - name: "ENABLE_EVENT_FORWARDING"
+      value: "true"
