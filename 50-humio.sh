@@ -29,8 +29,9 @@ function install-humio {
   # Install Humio Operator by Helm v3+
   execlog "helm install humio-operator humio-operator/humio-operator --namespace $NAMESPACE_HUMIO --version $HUMIO_OPERATOR_VERSION --set openshift=true"
 
-  # Create license: TODO
-  execlog "kubectl create secret generic humio-license --from-literal=data=<license>"
+  # Create license
+  execlog "kubectl create secret generic humio-license --from-file=data=./_humio_license.txt"
+  
 
   # Create Humio Cluster
   if [[ "${HUMIO_WITH_LDAP_INTEGRATED}" == "true" ]]; then 

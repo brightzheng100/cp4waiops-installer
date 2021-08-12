@@ -8,15 +8,17 @@ This project is designed to provide an automated, simplified way to install a se
 
 > Note: The `master` is meant for version `3.1.1+`; for installation of IBM Watson AIOps v2.1.x, please refer to tag `2.1.x`
 
-Currently there is a typical set of components included in this installation exerience, which takes less than 1 hour:
+Currently there is a typical set of components included in this installation exerience, which takes less than 1.5 hour:
 
 - Dependent Common Services (~3mins)
 - OpenLDAP as the LDAP server, if required (~3mins)
 - Dependent OpenShift Serverless (~5mins)
-- AIOps, with `aiopsFoundation`, `aiManager` and ` applicationManager` components (~30mins)
+- AIOps, with `aiopsFoundation`, `aiManager` and ` applicationManager` components (~60mins)
 - Humio (~5mins)
 
-> Note: along the way, there might be more components to be added here.
+Please note that:
+1. By design, the scripts are fully modularized so you can cherry-pick and install the components you want;
+2. Along the way, there might be more components to be added here.
 
 
 ## Get Started
@@ -29,15 +31,14 @@ Currently there is a typical set of components included in this installation exe
 
 **Process**
 
-### 1. Clone the repo to local and cd to the folder:
+### 1. Clone the repo and cd to the project folder
 
 ```sh
 $ git clone https://github.com/brightzheng100/cp4waiops-installer.git
 $ cd cp4waiops-installer
 ```
 
-
-### 2. Export configurable variables:
+### 2. Export configurable variables
 
 There are quite some configurable variables to further customize the installation.
 
@@ -55,6 +56,43 @@ export ENTITLEMENT_EMAIL="<YOUR EMAIL GOES HERE>"
 EOF
 ```
 
+**Important Notes:**
+
+To facilitate the retry UX, there is a way to skip some steps by exporting a list of `SKIP_STEPS`.
+
+For example, adding `export SKIP_STEPS="CS AIOPS"` into `_customization.sh` is to instruct the installation process to skip installing `Common Services` and `AIOps` objects. 
+
+The available named steps are:
+- `CS`: Common Services
+- `LDAP`: OpenLDAP as the potential dependency when `Humio` is installed, together with flag `HUMIO_WITH_LDAP_INTEGRATED=true`
+- `SERVERLESS`: OpenShift Serverless
+- `AIOPS`: AIOps with `aiopsFoundation`, `aiManager` and `applicationManager` components
+- `EXTENSIONS`: AIOps Extensions, if any
+- `INFRA`: Infrastructure Automation
+- `HUMIO`: Humio
+
+Please note that `Humio` is skipped by default as it requires a dedicated license file to be prepared.
+To include `Humio` by default, do this:
+
+```sh
+# Copy your Humio license file as _humio_license.txt
+$ cat ./_humio_license.txt
+
+# Tune some more parameters and add them into _customization.sh
+$ cat >> _customization.sh <<EOF
+#
+# Reset SKIP_STEPS to skip nothing
+#
+export SKIP_STEPS=""
+
+#
+# Humio
+#
+# Optionally, to further spin up LDAP and integrate with Humio
+export HUMIO_WITH_LDAP_INTEGRATED="true"
+EOF
+```
+
 ### 3. Kick off the installation
 
 ```sh
@@ -65,17 +103,7 @@ $ source _customization.sh
 $ ./install.sh
 ```
 
-> **Important Notes:**
-> 1. A `install-<YYYY-mm-dd>.log` file will be generated to log the installation activities within the `_logs` folder under current folder, but you can change the folder by `export LOGDIR=<somewhere else>`;
-> 2. To facilitate the retry UX, there is a way to skip some steps by exporting a list of `SKIP_STEPS`. For example: `export SKIP_STEPS="CS AIOPS"` is to instruct the installation process to skip installing `Common Services` and `AIOps` objects. The available named steps are:
->    - CS: Common Services
->    - LDAP: OpenLDAP
->    - SERVERLESS: OpenShift Serverless
->    - AIOPS: AIOps with aiopsFoundation aiManager applicationManager components
->    - EXTENSIONS: AIOps Extensions, if any
->    - INFRA: Infrastructure Automation
->    - HUMIO: Humio
-
+A `install-<YYYY-mm-dd>.log` file will be generated to log the installation activities within the `_logs` folder under current folder, but you can change the folder by `export LOGDIR=<somewhere else>`;
 
 ### 4. How to access?
 

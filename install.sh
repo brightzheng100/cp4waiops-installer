@@ -231,23 +231,41 @@ fi
 # 50. Humio
 # 
 ############################################################
+humio_decision=false
 log "----------- 50. Humio --------------"
 if [[ " ${SKIP_STEPS[@]} " =~ " HUMIO " ]]; then
     log "----------- SKIPPED --------------"
 else
-    # Pre
-    install-humio-pre
-    # Install
-    install-humio
-    # Wait for 2 mins
-    progress-bar 2
-    # Check pod process, with timeout of 15mins, for expected 7 pods
-    check-namespaced-pod-status $NAMESPACE_HUMIO 15 7
-    # Post actions
-    install-humio-post-actions
-    # Expose Humio svc "humio-cluster" for both http and es port
-    oc expose svc humio-cluster -n $NAMESPACE_HUMIO --port="http"
-    oc expose svc humio-cluster -n $NAMESPACE_HUMIO --name=humio-cluster-es --port="es"
+    # License
+    license_content=""
+    if [ -f "./_humio_license.txt" ]; then
+        license_content="$( cat ./_humio_license.txt)"
+        humio_decision=true
+    else
+        logn "there is no ./_humio_license.txt exists, you may try paste the license content here, then press enter: "
+        read license_content_answer
+        if [ "$license_content_answer" == ""]; then
+            log "Skip Humio since no license provided!"
+        else
+            echo $license_content_answer > ./_humio_license.txt
+            humio_decision=true
+        fi
+    fi
+    if [[ $humio_decision == true ]]; then
+        # Pre
+        install-humio-pre
+        # Install
+        install-humio
+        # Wait for 2 mins
+        progress-bar 2
+        # Check pod process, with timeout of 15mins, for expected 7 pods
+        check-namespaced-pod-status $NAMESPACE_HUMIO 15 7
+        # Post actions
+        install-humio-post-actions
+        # Expose Humio svc "humio-cluster" for both http and es port
+        oc expose svc humio-cluster -n $NAMESPACE_HUMIO --port="http"
+        oc expose svc humio-cluster -n $NAMESPACE_HUMIO --name=humio-cluster-es --port="es"
+    fi
 fi
 
 
@@ -257,16 +275,17 @@ fi
 # 
 ############################################################
 log "~~~~~~~~~~~~~~~~~~~~~~~~~~~ Conclusion ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
 # Display how to access IBM Cloud Pak for Watson AIOps console
 how-to-access-aiops-console
-# Display how to access Humio
+
+# Display how to access Humio, if it's installed
+if [[ $humio_decision == true ]]; then
 how-to-access-humio
+fi
 
 log "~~~~~~~~~~~~~~~~~~~~~~~~~~~ What's Next? ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 log "Please check out the doc for the next: https://www.ibm.com/docs/en/cloud-paks/cp-waiops/3.1.1?topic=installing-postinstallation-tasks"
-log "Typically there are a couple of things to be done to make it a complete solution:"
-log "1. Create outgoing integrations, with Slack or Microsoft Teams;"
-log "2. Install the Event Manager Gateway to enable event data to flow from the event management component to the AI Manager;"
 
 
 log "~~~~~~~~~~~~~~~~~~~~~~~~~~~  THE END!  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

@@ -20,9 +20,13 @@ if [ -z "${ENTITLEMENT_KEY}" ] | [ -z "${ENTITLEMENT_EMAIL}" ]; then
 fi
 
 #
-# ROKS
-# 
+# Parameters
+#
+# Whether the env is ROKS
 export ROKS="${ROKS:-true}"
+# Default steps to be skipped
+# Because Humio requires a dedicated license to be created as secret, skip it by default
+export SKIP_STEPS="${SKIP_STEPS:-HUMIO}"
 
 #
 # Namespaces
@@ -50,4 +54,4 @@ export LDAP_ADMIN_PASSWORD="${LDAP_ADMIN_PASSWORD:-Passw0rd}"
 export HUMIO_OPERATOR_VERSION="${HUMIO_OPERATOR_VERSION:-0.10.1}"
 # Variable to control whether to integrate with LDAP
 # Making it true will spin up the OpenLDAP in namespace "ldap", populated with data from integration/ldap/ldif/*.ldif
-export HUMIO_WITH_LDAP_INTEGRATED="${HUMIO_WITH_LDAP_INTEGRATED:-true}"
+export HUMIO_WITH_LDAP_INTEGRATED="${HUMIO_WITH_LDAP_INTEGRATED:-false}"
