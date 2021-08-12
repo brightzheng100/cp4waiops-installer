@@ -70,8 +70,11 @@ metadata:
   name: humio-cluster
   namespace: "$NAMESPACE_HUMIO"
 spec:
-  # in operator v0.6.1 the default image is: humio/humio-core:1.20.1
-  image: humio/humio-core:1.25.3
+  image: humio/humio-core:1.29.1
+  license:
+    secretKeyRef:
+    name: humio-license
+    key: data
   humioServiceAccountName: humio
   initServiceAccountName: humio
   authServiceAccountName: humio

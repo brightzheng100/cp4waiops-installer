@@ -3,10 +3,12 @@
 source lib/utils.sh
 source lib/status.sh
 
-function install-humio {
+function install-humio-pre {
   # Create a project for Humio
   execlog "oc new-project $NAMESPACE_HUMIO"
+}
 
+function install-humio {
   # Install a dedicated Kafka instance powered by Strimzi for Humio
   execlog 'envsubst < manifests/humio/humio-kafka.yaml | oc apply -f -'
 
@@ -17,18 +19,19 @@ function install-humio {
   execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioparsers.yaml"
   execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humiorepositories.yaml"
   execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioviews.yaml"
-  # starting from v0.6.x
-  if [[ ! "$HUMIO_OPERATOR_VERSION" < "0.6.0" ]]; then
   execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioalerts.yaml"
   execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioactions.yaml"
-  fi
-  
+
   # Add Humio to Helm repo
   execlog "helm repo add humio-operator https://humio.github.io/humio-operator"
   execlog "helm repo update"
 
   # Install Humio Operator by Helm v3+
   execlog "helm install humio-operator humio-operator/humio-operator --namespace $NAMESPACE_HUMIO --version $HUMIO_OPERATOR_VERSION --set openshift=true"
+
+  # Create license: TODO
+  execlog "kubectl create secret generic humio-license --from-literal=data=<license>"
+
   # Create Humio Cluster
   if [[ "${HUMIO_WITH_LDAP_INTEGRATED}" == "true" ]]; then 
     execlog 'envsubst < manifests/humio/humio-cluster-with-ldap.yaml | oc apply -f -'
