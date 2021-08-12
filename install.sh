@@ -165,14 +165,19 @@ if [[ " ${SKIP_STEPS[@]} " =~ " AIOPS " ]]; then
 else
     # Install AIOPs pre
     install-aiops-pre
+
     # Install AIOPs operators
     install-aiops-operators
+
     # Wait for 10 mins
     progress-bar 10
+
     # Install AIOPs CRs
     install-aiops-cr
+
     # Wait for 5 mins
     progress-bar 5
+
     # Check process with logs displayed, with timeout of 30mins, for expected 150 more pods in namespace
     # Something like this:
     # ------
@@ -189,6 +194,9 @@ else
         165 \
         5 \
         "oc get Installation,noi,aimanager,asmformation,cemformation -A -o custom-columns='NAME:metadata.name,NAMESPACE:metadata.namespace,PHASE:status.phase'"
+
+    # perform post actions
+    install-aiops-post-actions
 fi
 
 
@@ -253,6 +261,12 @@ log "~~~~~~~~~~~~~~~~~~~~~~~~~~~ Conclusion ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 how-to-access-aiops-console
 # Display how to access Humio
 how-to-access-humio
+
+log "~~~~~~~~~~~~~~~~~~~~~~~~~~~ What's Next? ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+log "Please check out the doc for the next: https://www.ibm.com/docs/en/cloud-paks/cp-waiops/3.1.1?topic=installing-postinstallation-tasks"
+log "Typically there are a couple of things to be done to make it a complete solution:"
+log "1. Create outgoing integrations, with Slack or Microsoft Teams;"
+log "2. Install the Event Manager Gateway to enable event data to flow from the event management component to the AI Manager;"
 
 
 log "~~~~~~~~~~~~~~~~~~~~~~~~~~~  THE END!  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

@@ -1,0 +1,22 @@
+---
+apiVersion: ai-manager.watson-aiops.ibm.com/v1beta1
+kind: EventManagerGateway
+metadata:
+  name: event-manager-gateway
+  namespace: $NAMESPACE_CP4WAIOPS
+spec:
+  logLevel: WARN
+  license: accept
+  objectServerPrimaryPort: 4100
+  serviceAccountName: noi-service-account
+  objectServerBackupPort: 4200
+  kafka:
+    clusterName: strimzi-cluster
+    topicName: alerts-noi-1000-1000
+    userName: token
+  objectServerPrimaryHost: evtmanager-objserv-agg-primary
+  objectServerBackupHost: evtmanager-objserv-agg-backup
+  replicationTypes:
+    - INSERTS
+  virtualPairName: AGG_V
+  filter: Severity=5

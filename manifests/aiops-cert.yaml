@@ -1,0 +1,19 @@
+---
+apiVersion: core.automation.ibm.com/v1beta1
+kind: AutomationUIConfig
+metadata:
+  name: iaf-system
+  namespace: $NAMESPACE_CP4WAIOPS
+spec:
+  description: AutomationUIConfig for CP4WAIOps
+  license:
+    accept: true
+  version: v1.0
+  storage:
+    class: $STORAGECLASS_FILE
+  tls:
+    caSecret:
+      key: ca.crt
+      secretName: external-tls-secret
+    certificateSecret:
+      secretName: external-tls-secret

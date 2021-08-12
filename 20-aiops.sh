@@ -2,6 +2,7 @@
 
 source lib/utils.sh
 source lib/status.sh
+source 21-aiops-post-actions.sh
 
 function install-aiops-pre {
     #
@@ -24,6 +25,17 @@ function install-aiops-operators {
 function install-aiops-cr {
     # Install the AI Ops Operators
     execlog 'envsubst < manifests/aiops-cr.yaml | oc apply -f -'
+}
+
+#
+# Calling post actions from 21-aiops-post-actions.sh
+#
+function install-aiops-post-actions {
+    # Update the AIOps cert
+    update-aiops-cert
+
+    # Install Event Manager Gateway to enable event data to flow from the event management component to the AI Manager
+    install-event-manager-gateway
 }
 
 function how-to-access-aiops-console {
