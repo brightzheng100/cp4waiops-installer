@@ -48,19 +48,28 @@ function check-namespaced-pod-status {
 # Keep checking whether all specified namespace's pods are running/completed,
 # while displaying some log lines by a specific command
 #
-# Sample usage:
+# == Paramaters ==
+# $1 - namespace
+# $2 - timeout in minute
+# $3 - minimum num of expected pods
+# $4 - igmorable num of pods
+# $5 - the command to run for scaping the logs / info
+#
+# == Sample Usage ==
 # - Check and wait "route/ibm-cp4aiops-cpd" presence and keep displaying last 3 lines of post actions status, with 10mins timeout
 #   $ check-namespaced-pod-status-and-keep-displaying-logs-lines \
-#       "$NAMESPACE_CP4WAIOPS" \
-#       30 \
-#       150 \
-#       "oc get Installation,noi,aimanager,asmformation,cemformation -A -o custom-columns='NAME:metadata.name,NAMESPACE:metadata.namespace,PHASE:status.phase'" \
+#           "$NAMESPACE_CP4WAIOPS" \
+#           60 \
+#           165 \
+#           5 \
+#           "oc get Installation,noi,aimanager,asmformation,cemformation -A -o custom-columns='NAME:metadata.name,NAMESPACE:metadata.namespace,PHASE:status.phase'" \
 #
 function check-namespaced-pod-status-and-keep-displaying-logs-lines {
     local namespace="$1"
     local timeout_min=$2
     local expected_pods_min="$3"
-    local display_command="$4"
+    local ignorable_pods="$4"
+    local display_command="$5"
 
     local wc_all=0
     local wc_remaining=0
@@ -77,8 +86,8 @@ function check-namespaced-pod-status-and-keep-displaying-logs-lines {
         
         log "Waiting for pods in ns ($namespace) to be running/completed: expected >= $expected_pods_min; current = $wc_all; ongoing = $wc_remaining... recheck in $time of $timeout_min mins"
         
-        if [ $wc_remaining -le 0 ] && [ $wc_all -ge $expected_pods_min ]; then
-            # no more remaining
+        if [ $wc_remaining -le $ignorable_pods ] && [ $wc_all -ge $expected_pods_min ]; then
+            # no more remaining, or just a few ignorable pods
             finished=true
             log "DONE!"
             break

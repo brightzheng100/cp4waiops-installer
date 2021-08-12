@@ -156,10 +156,10 @@ fi
 
 ###
 #
-# 20. AI Ops
+# 20. AIOps
 # 
 ############################################################
-log "----------- 20. AI Ops --------------"
+log "----------- 20. AIOps --------------"
 if [[ " ${SKIP_STEPS[@]} " =~ " AIOPS " ]]; then
     log "----------- SKIPPED --------------"
 else
@@ -185,9 +185,36 @@ else
     # ------
     check-namespaced-pod-status-and-keep-displaying-logs-lines \
         "$NAMESPACE_CP4WAIOPS" \
-        30 \
-        150 \
+        60 \
+        165 \
+        5 \
         "oc get Installation,noi,aimanager,asmformation,cemformation -A -o custom-columns='NAME:metadata.name,NAMESPACE:metadata.namespace,PHASE:status.phase'"
+fi
+
+
+###
+#
+# 30. AIOps Extensions
+# 
+############################################################
+log "----------- 30. AIOps Extensions --------------"
+if [[ " ${SKIP_STEPS[@]} " =~ " EXTENSIONS " ]]; then
+    log "----------- SKIPPED --------------"
+else
+    log "Nothing yet for AIOps extensions"
+fi
+
+
+###
+#
+# 40. Infrastructure Automation
+# 
+############################################################
+log "----------- 40. Infrastructure Automation --------------"
+if [[ " ${SKIP_STEPS[@]} " =~ " INFRA " ]]; then
+    log "----------- SKIPPED --------------"
+else
+    log "Nothing yet for Infrastructure Automation"
 fi
 
 
