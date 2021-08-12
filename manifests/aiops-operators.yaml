@@ -1,38 +1,14 @@
 ---
-# CatalogSource
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: ibm-watson-aiops-catalog
-  namespace: openshift-marketplace
-spec:
-  displayName: IBM Watson AIOps catalog source
-  publisher: IBM
-  sourceType: grpc
-  image: docker.io/ibmcom/ibm-operator-catalog:latest
-  updateStrategy:
-    registryPoll:
-      interval: 45m
----
-apiVersion: operators.coreos.com/v1
-kind: OperatorGroup
-metadata:
-  name: ibm-watson-aiops-operators
-  namespace: $NAMESPACE_CP4AIOPS
-spec:
-  targetNamespaces:
-  - $NAMESPACE_CP4AIOPS
----
-# "Watson AI Ops" operator
+# IBM Cloud Pak for Watson AIOps operator.
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: ibm-watson-aiops
-  namespace: $NAMESPACE_CP4AIOPS
+  name: ibm-aiops-orchestrator
+  namespace: openshift-operators
 spec:
-  channel: v1.1
+  channel: v3.1
   installPlanApproval: Automatic
-  name: ibm-watson-aiops
-  source: ibm-watson-aiops-catalog
+  name: ibm-aiops-orchestrator
+  source: ibm-aiops-catalog
   sourceNamespace: openshift-marketplace
-  startingCSV: ibm-watson-aiops-operator.v1.1.0
+

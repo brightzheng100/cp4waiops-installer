@@ -11,28 +11,26 @@ all="${1}"
 # Uninstall Humio
 uninstall-humio
 
-# Uninstall Event Manager
-uninstall-event-manager
-
-# Uninstall AIManager
-uninstall-aimanager
-
-# Uninstall Common Services
-if [[ "$all" == "all" ]]; then
-uninstall-common-services
-fi
+# Uninstall AIOps
+uninstall-aiops
 
 # Uninstall post stuff
-uninstall-aimanager-post-actions
 uninstall-humio-post-actions
+uninstall-aiops-post-actions
 
 # Wait 2 mins
 progress-bar 2
 
 # Delete projects
 oc delete project $NAMESPACE_HUMIO
-oc delete project $NAMESPACE_CP4AIOPS
+oc delete project $NAMESPACE_CP4WAIOPS
+purge_namespace $NAMESPACE_CP4WAIOPS
+
+# Further clean-up
 if [[ "$all" == "all" ]]; then
+    # Common Services
+    uninstall-common-services
+
     # LDAP
     uninstall-ldap
 

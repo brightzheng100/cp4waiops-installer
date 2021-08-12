@@ -1,0 +1,46 @@
+---
+# IBM Cloud Pak for Watson AIOps Orchestrator CatalogSource
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-aiops-catalog
+  namespace: openshift-marketplace
+spec:
+  address: ibm-aiops-catalog.openshift-marketplace:50051
+  displayName: IBM AIOps Catalog
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/aiops-orchestrator-catalog:3.1-latest
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+
+---
+# IBM Operators CatalogSource
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: IBM Operator Catalog
+  publisher: IBM
+  sourceType: grpc
+  image: docker.io/ibmcom/ibm-operator-catalog:latest
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+
+---
+# IBM AIOps Orchestrator
+# apiVersion: operators.coreos.com/v1alpha1
+# kind: Subscription
+# metadata:
+#   name: ibm-aiops-orchestrator
+#   namespace: openshift-operators
+# spec:
+#   channel: v3.1
+#   installPlanApproval: Automatic
+#   name: ibm-aiops-orchestrator
+#   source: ibm-aiops-catalog
+#   sourceNamespace: openshift-marketplace

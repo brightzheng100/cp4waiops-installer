@@ -3,16 +3,18 @@
 source lib/utils.sh
 source lib/status.sh
 
-#
-# This is to create a simple OpenLDAP service
-#
-function install-ldap {
+function install-ldap-pre {
     # Create a dedicated namespace
     execlog oc new-project $NAMESPACE_LDAP || true
 
     # Assign scc to ldap/default sa
     execlog oc adm policy add-scc-to-user anyuid system:serviceaccount:$NAMESPACE_LDAP:default
+}
 
+#
+# This is to create a simple OpenLDAP service
+#
+function install-ldap {
     # Install OpenLDAP
     execlog oc -n $NAMESPACE_LDAP create secret generic openldap --from-literal=adminpassword=$LDAP_ADMIN_PASSWORD
     # deploy

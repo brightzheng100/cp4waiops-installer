@@ -61,3 +61,21 @@ function validate_storageclass {
         echo "Storage class $1 exists."
     fi
 }
+
+function is_required_tool_missed {
+    logn "Checking required tool: $1 ... "
+    if [ -x "$(command -v $1)" ]; then
+        log "installed"
+        false
+    else
+        log "not installed"
+        true
+    fi
+}
+
+function purge_namespace {
+    local NAMESPACE_TO_DELETE=$1
+    kubectl get ns $NAMESPACE_TO_DELETE -o json | jq '.spec.finalizers=[]' > ns-without-finalizers.json
+    kubectl replace --raw "/api/v1/namespaces/$NAMESPACE_TO_DELETE/finalize" -f ./ns-without-finalizers.json
+    rm -f ns-without-finalizers.json || true
+}

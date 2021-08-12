@@ -1,0 +1,37 @@
+---
+#
+# KnativeServing
+#
+# To verify, do this: 
+# oc get knativeserving.operator.knative.dev/knative-serving -n knative-serving \
+#   --template='{{range .status.conditions}}{{printf "%s=%s\n" .type .status}}{{end}}'
+
+apiVersion: operator.knative.dev/v1alpha1
+kind: KnativeServing
+metadata:
+  name: knative-serving
+  namespace: knative-serving
+  labels:
+    ibm-aiops-install/install: knative-serving
+spec:
+  config:
+    autoscaler:
+      enable-scale-to-zero: "true"
+    domain:
+      svc.cluster.local: |
+        selector:
+          sdlc.visibility: cluster-local
+
+---
+#
+# KnativeEventing
+#
+# To verify, do this: 
+# oc get knativeeventing.operator.knative.dev/knative-eventing -n knative-eventing \
+#   --template='{{range .status.conditions}}{{printf "%s=%s\n" .type .status}}{{end}}'
+apiVersion: operator.knative.dev/v1alpha1
+kind: KnativeEventing
+metadata:
+    name: knative-eventing
+    namespace: knative-eventing
+spec: {}

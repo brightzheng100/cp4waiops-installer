@@ -1,0 +1,67 @@
+---
+# IBM Cloud Pak for Watson AIOps CR
+apiVersion: orchestrator.aiops.ibm.com/v1alpha1
+kind: Installation
+metadata:
+  name: ibm-cloudpak-for-watson-aiops
+  namespace: $NAMESPACE_CP4WAIOPS
+spec:
+  imagePullSecret: ibm-entitlement-key
+  license:
+    accept: true
+  pakModules:
+    - name: aiopsFoundation
+      enabled: true
+    - name: aiManager
+      enabled: true
+      config:
+      - name: aimanager-operator
+        spec:
+          aimanager:
+            aimanagerValues:
+              postgres:
+                livenessProbe:
+                  initialDelaySeconds: 300
+                  timeoutSeconds: 15
+                  failureThreshold: 5
+                  periodSeconds: 15
+                  successThreshold: 1
+                readinessProbe:
+                  initialDelaySeconds: 300
+                  timeoutSeconds: 15
+                  failureThreshold: 5
+                  periodSeconds: 15
+                  successThreshold: 1
+                keeper:
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 256Mi
+                    limits:
+                      cpu: 500m
+                      memory: 512Mi
+                sentinel:
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 256Mi
+                    limits:
+                      cpu: 500m
+                      memory: 512Mi
+                serviceAccount:
+                  name: aimanager-operator
+                persistence:
+                    enabled: true
+                    storageClass: $STORAGECLASS_FILE
+                    size: 20Gi
+    - name: applicationManager
+      enabled: true
+      config:
+      - name: noi-operator
+        spec:
+          noi:
+            persistence:
+              storageClassDB2: $STORAGECLASS_FILE
+  size: "Small"
+  storageClass: $STORAGECLASS_FILE
+  storageClassLargeBlock: $STORAGECLASS_FILE

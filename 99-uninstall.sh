@@ -2,15 +2,20 @@
 
 source lib/utils.sh
 source lib/status.sh
+source lib/status.sh
 source 00-setup.sh
 
-# Humio
+# 50 - Humio
 function uninstall-humio {
-    # Operators, Instance & Helm Chart
-    envsubst < manifests/humio/humio-kafka.yaml | oc delete -f -
+    # Humio Cluster
     envsubst < manifests/humio/humio-cluster.yaml | oc delete -f -
+    # Kafka
+    envsubst < manifests/humio/humio-kafka.yaml | oc delete -f -
+    # Operator
     helm delete humio-operator --namespace $NAMESPACE_HUMIO
 }
+
+# 50 - Humio post actions
 function uninstall-humio-post-actions {
     # PVCs
     pvcs=( \
@@ -24,57 +29,45 @@ function uninstall-humio-post-actions {
     done
 }
 
-# Event Manager
-function uninstall-event-manager {
-    envsubst < manifests/event-manager.yaml | oc delete -f -
+# 20 - Watson AIOps
+function uninstall-aiops {
+    # CRs
+    envsubst < manifests/aiops-cr.yaml | oc delete -f -
+    # Operators
+    envsubst < manifests/aiops-operators.yaml | oc delete -f -
+    # CatalogSources
+    envsubst < manifests/aiops-catalogsources.yaml | oc delete -f -
 }
 
-# AI Manager
-function uninstall-aimanager {
-    # Operators, Instance & PVCs
-    envsubst < manifests/aimanager.yaml | oc delete -f -
-}
-function uninstall-aimanager-post-actions {
+# 20 - Watson AIOps post actions
+function uninstall-aiops-post-actions {
+    # Some extra objects that require to clean up
+    oc delete ZenService/iaf-zen-cpdservice -n $NAMESPACE_CP4WAIOPS
+    oc delete Elasticsearch.elastic.automation.ibm.com/iaf-system -n $NAMESPACE_CP4WAIOPS
     # PVCs
-    pvcs=( \
-        cpd-install-operator-pvc \
-        cpd-install-shared-pvc \
-        data-strimzi-cluster-kafka-0 \
-        data-strimzi-cluster-zookeeper-0 \
-        datadir-zen-metastoredb-0 \
-        datadir-zen-metastoredb-1 \
-        datadir-zen-metastoredb-2 \
-        elasticsearch-ibm-elasticsearch-ibm-elasticsearch-data-elasticsea-cd98-ib-6fb9-es-server-all-0 \
-        export-aimanager-ibm-minio-0 \
-        export-aimanager-ibm-minio-1 \
-        export-aimanager-ibm-minio-2 \
-        export-aimanager-ibm-minio-3 \
-        influxdb-pvc \
-        stolon-data-aimanager-postgres-keeper-0 \
-        user-home-pvc \
-        aimanager-ibm-flink-job-manager-recovery-pvc \
-    )
+    pvcs=(`oc -n $NAMESPACE_CP4WAIOPS get pvc -o json | jq -r '.items[].metadata.name'`)
     for pvc in "${pvcs[@]}"
     do
-        oc patch pvc $pvc -p '{"metadata":{"finalizers":null}}' -n $NAMESPACE_CP4AIOPS
-        oc delete pvc $pvc --grace-period=0 --force -n $NAMESPACE_CP4AIOPS &
+        oc patch pvc $pvc -p '{"metadata":{"finalizers":null}}' -n $NAMESPACE_CP4WAIOPS
+        oc delete pvc $pvc --grace-period=0 --force -n $NAMESPACE_CP4WAIOPS &
     done
 }
 
-# Watson AIOps
-function uninstall-aimanager {
-    # Operators
-    envsubst < manifests/aiops-operators.yaml | oc delete -f -
+# 12 - OpenShift Serverless
+function uninstall-openshift-serverless {
+    oc -n openshift-serverless delete -f manifests/openshift-serverless-cr.yaml
+    oc -n openshift-serverless delete -f manifests/openshift-serverless-operators.yaml
+    oc delete project openshift-serverless
 }
 
-# Common Services
-function uninstall-common-services {
-    envsubst < manifests/common-services-cr.yaml | oc delete -f -
-    envsubst < manifests/common-services-operators.yaml | oc delete -f -
-}
-
-# LDAP
+# 11 - LDAP
 function uninstall-ldap {
     oc -n $NAMESPACE_LDAP delete -f integration/ldap/openldap.yaml
     oc delete project $NAMESPACE_LDAP
+}
+
+# 10 - Common Services
+function uninstall-common-services {
+    #envsubst < manifests/common-services-cr.yaml | oc delete -f -
+    envsubst < manifests/common-services-operators.yaml | oc delete -f -
 }

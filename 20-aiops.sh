@@ -3,19 +3,38 @@
 source lib/utils.sh
 source lib/status.sh
 
-function install-aiops {
-
+function install-aiops-pre {
     #
     # Create namespace for Common Services
     #
-    execlog oc new-project $NAMESPACE_CP4AIOPS
+    execlog oc new-project $NAMESPACE_CP4WAIOPS
 
-    # cp.icr.io is required for Watson AIOps.
-    execlog oc create secret docker-registry 'cp.icr.io' --docker-server="cp.icr.io" --docker-username="cp" --docker-password="$ENTITLEMENT_KEY" --docker-email="$ENTITLEMENT_EMAIL" --namespace="$NAMESPACE_CP4AIOPS"
-    # cp.stg.icr.io is required for AI Manager
-    execlog oc create secret docker-registry 'cp.stg.icr.io' --docker-server="cp.icr.io" --docker-username="cp" --docker-password="$ENTITLEMENT_KEY" --docker-email="$ENTITLEMENT_EMAIL" --namespace="$NAMESPACE_CP4AIOPS"
+    # Create the entitlement key secret
+    execlog oc create secret docker-registry 'ibm-entitlement-key' --docker-server="cp.icr.io" --docker-username="cp" --docker-password="$ENTITLEMENT_KEY" --docker-email="$ENTITLEMENT_EMAIL" --namespace="$NAMESPACE_CP4WAIOPS"
 
+    # Create CatalogSources
+    execlog 'oc apply -f manifests/aiops-catalogsources.yaml'
+}
+
+function install-aiops-operators {
     # Install the AI Ops Operators
-    execlog 'envsubst < manifests/aiops-operators.yaml | oc apply -f -'
+    execlog 'oc apply -f manifests/aiops-operators.yaml'
+}
 
+function install-aiops-cr {
+    # Install the AI Ops Operators
+    execlog 'envsubst < manifests/aiops-cr.yaml | oc apply -f -'
+}
+
+function how-to-access-aiops-console {
+    local url="$( oc get route -n $NAMESPACE_CP4WAIOPS cpd -o jsonpath='{.spec.host}' )"
+    local username="$( oc -n $NAMESPACE_CS get secret platform-auth-idp-credentials -o jsonpath='{.data.admin_username}' | base64 -d && echo )"
+    local password="$( oc -n $NAMESPACE_CS get secret platform-auth-idp-credentials -o jsonpath='{.data.admin_password}' | base64 -d )"
+    
+    log "========================================================"
+    log "Here is the info for how to access IBM Cloud Pak for Watson AIOps console:"
+    log "- URL: $url"
+    log "- username: $username"
+    log "- password: $password"
+    log "========================================================"
 }

@@ -1,17 +1,19 @@
-# A Simplified Installation Guide for IBM Watson AIOps
+# A Simplified Installation Guide for Cloud Pak for Watson AIOps
 
 **Note:** This is not an IBM project and is provided **AS-IS**. Support is provided by community collaboration style at best effort only.
 
 ## Overview
 
-This project is designed to provide an automated, simplified way to install a set of desired components of the IBM Watson AIOps v2.1.x, for POC / demo purposes only, on ROKS with classic infra.
+This project is designed to provide an automated, simplified way to install a set of desired components of the Cloud Pak for Watson AIOps, for POC / demo purposes only, on ROKS with classic infra.
 
-Currently there is a minimum set of components included in this installation exerience, which takes less than 1 hour:
+> Note: The `master` is meant for version `3.1.1+`; for installation of IBM Watson AIOps v2.1.x, please refer to tag `2.1.x`
 
-- OpenLDAP as the LDAP server, if required (~3mins)
+Currently there is a typical set of components included in this installation exerience, which takes less than 1 hour:
+
 - Dependent Common Services (~3mins)
-- Event Manager (~10mins)
-- AI Manager (~30mins)
+- OpenLDAP as the LDAP server, if required (~3mins)
+- Dependent OpenShift Serverless (~5mins)
+- AIOps, with `aiopsFoundation`, `aiManager` and ` applicationManager` components (~30mins)
 - Humio (~5mins)
 
 > Note: along the way, there might be more components to be added here.
@@ -21,18 +23,17 @@ Currently there is a minimum set of components included in this installation exe
 
 **Prerequisites**
 
-- `oc` command
+- CLI tools: `oc`, `helm` v3, and `jq`
 - You must be authenticated to your OpenShift cluster with admin permissions
-- [IBM Entitled Registry Key](https://myibm.ibm.com/products-services/containerlibrary) 
-- Helm v3 CLI
+- [IBM Entitled Registry Key](https://myibm.ibm.com/products-services/containerlibrary)
 
 **Process**
 
-### 1. Clone the repo to local:
+### 1. Clone the repo to local and cd to the folder:
 
 ```sh
-$ git clone https://github.com/brightzheng100/cp4aiops-installer.git
-$ cd cp4aiops-installer
+$ git clone https://github.com/brightzheng100/cp4waiops-installer.git
+$ cd cp4waiops-installer
 ```
 
 
@@ -54,7 +55,7 @@ export ENTITLEMENT_EMAIL="<YOUR EMAIL GOES HERE>"
 EOF
 ```
 
-### 3. Make sure you are in the project base folder to execute commands
+### 3. Kick off the installation
 
 ```sh
 # Source the customization we've compiled
@@ -64,14 +65,15 @@ $ source _customization.sh
 $ ./install.sh
 ```
 
-> Important Notes: 
+> **Important Notes:**
 > 1. A `install-<YYYY-mm-dd>.log` file will be generated to log the installation activities within the `_logs` folder under current folder, but you can change the folder by `export LOGDIR=<somewhere else>`;
-> 2. To facilitate the retry UX, there is a way to skip some steps by exporting a list of `SKIP_STEPS`. For example: `export SKIP_STEPS="CS AIOPS"` is to instruct the installation process to skip installing `Common Services` and `AI Ops` objects. The available named steps are: 
+> 2. To facilitate the retry UX, there is a way to skip some steps by exporting a list of `SKIP_STEPS`. For example: `export SKIP_STEPS="CS AIOPS"` is to instruct the installation process to skip installing `Common Services` and `AIOps` objects. The available named steps are:
 >    - CS: Common Services
->    - LDAP: Dependent LDAP service, if needed
->    - AIOPS: AI Ops
->    - EVENTMANAGER: Event Manager
->    - AIMANAGER: AI Manager
+>    - LDAP: OpenLDAP
+>    - SERVERLESS: OpenShift Serverless
+>    - AIOPS: AIOps with aiopsFoundation aiManager applicationManager components
+>    - EXTENSIONS: AIOps Extensions, if any
+>    - INFRA: Infrastructure Automation
 >    - HUMIO: Humio
 
 
@@ -85,13 +87,9 @@ But printing out the access info is also doable anytime after installation:
 # Source the necessary
 source _customization.sh && source 00-setup.sh
 
-# Display how to access Event Manager
-source 30-event-manager.sh
-how-to-access-event-manager
-
-# Display how to access AIManager
-source 40-aimanager.sh
-how-to-access-aimanager
+# Display how to access IBM Cloud Pak for Watson AIOps console
+source 20-aiops.sh
+how-to-access-aiops-console
 
 # Display how to access Humio
 source 50-humio.sh
@@ -125,12 +123,12 @@ For example:
 To uninstall, run this:
 
 ```sh
-source _customization.sh
+source _customization.sh && source 00-setup.sh
 
-# To uninstall ALL except Common Services
+# To uninstall ALL except Common Services and LDAP
 ./uninstall.sh
 
-# Or to uninstall ALL including Common Services
+# Or to uninstall ALL including Common Services and LDAP
 ./uninstall.sh all
 ```
 
@@ -142,9 +140,9 @@ If you want to uninstall specific component(s), you can do this:
 ```sh
 source _customization.sh && source 00-setup.sh  && source 99-uninstall.sh
 
-# Uninstall only AIManager component
-uninstall-aimanager
-uninstall-aimanager-post-actions
+# Uninstall only AIOps components
+uninstall-aiops
+uninstall-aiops-post-actions
 ```
 
 > Note: you may have to run `./uninstall.sh` multiple times to uninstall all completely.
