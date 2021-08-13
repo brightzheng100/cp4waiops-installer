@@ -1,30 +1,13 @@
 ---
-# apiVersion: operators.coreos.com/v1alpha1
-# kind: CatalogSource
-# metadata:
-#   name: serverless-catalog
-#   namespace: openshift-marketplace
-# spec:
-#   displayName: IBM Operator Catalog
-#   publisher: IBM Content
-#   sourceType: grpc
-#   image: docker.io/ibmcom/ibm-operator-catalog:latest
-#   updateStrategy:
-#     registryPoll:
-#       interval: 45m
-
 # OpenShift Serverless operator
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  labels:
-    operators.coreos.com/serverless-operator.openshift-serverless: ""
   name: serverless-operator
-  namespace: openshift-serverless
+  namespace: openshift-operators
 spec:
-  channel: stable
+  channel: "stable"
   installPlanApproval: Automatic
   name: serverless-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: serverless-operator.v1.16.0
