@@ -24,8 +24,7 @@ function update-aiops-cert {
   oc -n $NAMESPACE_CP4WAIOPS scale Deployment/ibm-nginx --replicas=0
   # scale up nginx
   sleep 3
-  local replicas=$(oc -n $NAMESPACE_CP4WAIOPS get pods -l component=ibm-nginx -o jsonpath='{ .items[*].metadata.name }' | wc -w)
-  oc -n $NAMESPACE_CP4WAIOPS scale Deployment/ibm-nginx --replicas=$replicas
+  oc -n $NAMESPACE_CP4WAIOPS scale Deployment/ibm-nginx --replicas=1
 
   # clean up
   rm -f cert.crt
