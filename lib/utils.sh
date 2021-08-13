@@ -65,10 +65,10 @@ function validate_storageclass {
 function is_required_tool_missed {
     logn "Checking required tool: $1 ... "
     if [ -x "$(command -v $1)" ]; then
-        log "installed"
+        echo "installed"
         false
     else
-        log "not installed"
+        echo "NOT installed"
         true
     fi
 }
