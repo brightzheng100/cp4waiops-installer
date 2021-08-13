@@ -22,7 +22,7 @@ function check-namespaced-pod-status {
         wc_all="`oc get po --no-headers=true -n $namespace | grep 'Running\|Completed' | wc -l  | xargs`"
         wc_remaining="`oc get po --no-headers=true -n $namespace | grep -v 'Running\|Completed' | wc -l | xargs`"
         
-        log "Waiting for pods in ns ($namespace) to be running/completed: expected >= $expected_pods_min; current = $wc_all; ongoing = $wc_remaining... recheck in $time of $timeout_min mins"
+        log "Waiting for pods in \"$namespace\" to be running/completed: expected >= $expected_pods_min; current = $wc_all; ongoing = $wc_remaining... recheck in $time of $timeout_min mins"
         
         if [ $wc_remaining -le 0 ] && [ $wc_all -ge $expected_pods_min ]; then
             # no more remaining
@@ -84,7 +84,7 @@ function check-namespaced-pod-status-and-keep-displaying-logs-lines {
         # display logs
         execlog $display_command
         
-        log "Waiting for pods in ns ($namespace) to be running/completed: expected >= $expected_pods_min; current = $wc_all; ongoing = $wc_remaining... recheck in $time of $timeout_min mins"
+        log "Waiting for pods in \"$namespace\" to be running/completed: expected >= $expected_pods_min; current = $wc_all; ongoing = $wc_remaining... recheck in $time of $timeout_min mins"
         
         if [ $wc_remaining -le $ignorable_pods ] && [ $wc_all -ge $expected_pods_min ]; then
             # no more remaining, or just a few ignorable pods
@@ -121,7 +121,7 @@ function check-namespaced-object-presence {
     finished=false
     for ((time=1;time<$timeout_min;time++)); do
         exist_check="`oc get $kind_name --no-headers=true -n $namespace | wc -l | xargs`"
-        log "Waiting for $kind_name in ns $namespace to be present... recheck in $time of $timeout_min mins"
+        log "Waiting for $kind_name in \"$namespace\" to be present... recheck in $time of $timeout_min mins"
         
         if [ $exist_check -eq 1 ]; then
             # yes, it's present
@@ -165,7 +165,7 @@ function check-namespaced-object-presence-and-keep-displaying-logs-lines {
     finished=false
     for ((time=1;time<$timeout_min;time++)); do
         exist_check="$( oc get $kind_name --no-headers=true -n $namespace | wc -l | xargs )"
-        log "Waiting for $kind_name in ns $namespace to be present... recheck in $time of $timeout_min mins"
+        log "Waiting for $kind_name in \"$namespace\" to be present... recheck in $time of $timeout_min mins"
 
         # display logs
         execlog $display_command
