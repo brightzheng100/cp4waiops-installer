@@ -110,9 +110,8 @@ fi
 # - Humio 
 # 
 ############################################################
-log "----------- 11. Dependencies, only when required --------------"
+log "----------- 11. LDAP, only when required --------------"
 if [[ "$HUMIO_WITH_LDAP_INTEGRATED" == "true" ]]; then
-    log "----------- 11. LDAP --------------"
     if [[ " ${SKIP_STEPS[@]} " =~ " LDAP " ]]; then
         log "----------- SKIPPED --------------"
     else

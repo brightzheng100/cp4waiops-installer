@@ -8,7 +8,7 @@ This project is designed to provide an automated, simplified way to install a se
 
 > Note: The `master` is meant for version `3.1.1+`; for installation of IBM Watson AIOps v2.1.x, please refer to tag `2.1.x`
 
-Currently there is a typical set of components included in this installation exerience, which takes less than 1.5 hour:
+Currently there is a typical set of components included in this installation experience, which takes less than 1.5 hour:
 
 - Dependent Common Services (~3mins)
 - OpenLDAP as the LDAP server, if required (~3mins)
@@ -60,7 +60,7 @@ EOF
 
 To facilitate the retry UX, there is a way to skip some steps by exporting a list of `SKIP_STEPS`.
 
-For example, adding `export SKIP_STEPS="CS AIOPS"` into `_customization.sh` is to instruct the installation process to skip installing `Common Services` and `AIOps` objects. 
+For example, `export SKIP_STEPS="CS LDAP SERVERLESS EXTENSIONS INFRA HUMIO"` is to instruct the installation process to skip installing anything except `AIOPS`. 
 
 The available named steps are:
 - `CS`: Common Services
