@@ -35,6 +35,7 @@ export NAMESPACE_CS="${NAMESPACE_CS:-ibm-common-services}"
 export NAMESPACE_CP4WAIOPS="${NAMESPACE_CP4WAIOPS:-ibm-cp4waiops}"
 export NAMESPACE_HUMIO="${NAMESPACE_HUMIO:-humio}"
 export NAMESPACE_LDAP="${NAMESPACE_LDAP:-ldap}"
+export NAMESPACE_OPENSHIFT_LOGGING="${NAMESPACE_OPENSHIFT_LOGGING:-openshift-logging}"
 
 #
 # StorageClass
@@ -55,3 +56,9 @@ export HUMIO_OPERATOR_VERSION="${HUMIO_OPERATOR_VERSION:-0.10.1}"
 # Variable to control whether to integrate with LDAP
 # Making it true will spin up the OpenLDAP in namespace "ldap", populated with data from integration/ldap/ldif/*.ldif
 export HUMIO_WITH_LDAP_INTEGRATED="${HUMIO_WITH_LDAP_INTEGRATED:-false}"
+
+#
+# OpenShift Logging
+#
+# Humio Operator Version
+export HUMIO_OPERATOR_VERSION="${HUMIO_OPERATOR_VERSION:-0.10.1}"

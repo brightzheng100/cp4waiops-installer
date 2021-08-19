@@ -8,9 +8,9 @@ source 00-setup.sh
 # 50 - Humio
 function uninstall-humio {
     # Humio Cluster
-    envsubst < manifests/humio/humio-cluster.yaml | oc delete -f -
+    envsubst < integration/humio/humio-cluster.yaml | oc delete -f -
     # Kafka
-    envsubst < manifests/humio/humio-kafka.yaml | oc delete -f -
+    envsubst < integration/humio/humio-kafka.yaml | oc delete -f -
     # Operator
     helm delete humio-operator --namespace $NAMESPACE_HUMIO
 }

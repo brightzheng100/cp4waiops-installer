@@ -10,7 +10,7 @@ function install-humio-pre {
 
 function install-humio {
   # Install a dedicated Kafka instance powered by Strimzi for Humio
-  execlog 'envsubst < manifests/humio/humio-kafka.yaml | oc apply -f -'
+  execlog 'envsubst < integration/humio/humio-kafka.yaml | oc apply -f -'
 
   # Install Humio CRDs
   execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioclusters.yaml"
@@ -35,9 +35,9 @@ function install-humio {
 
   # Create Humio Cluster
   if [[ "${HUMIO_WITH_LDAP_INTEGRATED}" == "true" ]]; then 
-    execlog 'envsubst < manifests/humio/humio-cluster-with-ldap.yaml | oc apply -f -'
+    execlog 'envsubst < integration/humio/humio-cluster-with-ldap.yaml | oc apply -f -'
   else
-    execlog 'envsubst < manifests/humio/humio-cluster.yaml | oc apply -f -'
+    execlog 'envsubst < integration/humio/humio-cluster.yaml | oc apply -f -'
   fi
 }
 
