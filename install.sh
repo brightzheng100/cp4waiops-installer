@@ -243,7 +243,7 @@ else
     else
         logn "there is no ./_humio_license.txt exists, you may try paste the license content here, then press enter: "
         read license_content_answer
-        if [ "$license_content_answer" == ""]; then
+        if [ "$license_content_answer" == "" ]; then
             log "Skip Humio since no license provided!"
         else
             echo $license_content_answer > ./_humio_license.txt
@@ -253,12 +253,16 @@ else
     if [[ $humio_decision == true ]]; then
         # Pre
         install-humio-pre
-        # Install
-        install-humio
+        # Install operators
+        install-humio-operators
         # Wait for 2 mins
         progress-bar 2
-        # Check pod process, with timeout of 15mins, for expected 7 pods
+        # Install Humio Cluster
+        install-humio-cluster
+        # Check pod process, with timeout of 15mins, and >=7pods expected
         check-namespaced-pod-status $NAMESPACE_HUMIO 15 7
+        # Install CRs
+        install-humio-crs
         # Post actions
         install-humio-post-actions
         # Expose Humio svc "humio-cluster" for both http and es port
