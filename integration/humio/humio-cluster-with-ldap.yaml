@@ -71,10 +71,10 @@ metadata:
   namespace: "$NAMESPACE_HUMIO"
 spec:
   # image: humio/humio-core:1.29.1
-  # license:
-  #   secretKeyRef:
-  #   name: humio-license
-  #   key: data
+  license:
+    secretKeyRef:
+      name: humio-license
+      key: data
   humioServiceAccountName: humio
   initServiceAccountName: humio
   authServiceAccountName: humio

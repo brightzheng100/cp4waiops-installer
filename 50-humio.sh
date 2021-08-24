@@ -13,25 +13,26 @@ function install-humio-operators {
   execlog 'envsubst < integration/humio/humio-kafka.yaml | oc apply -f -'
 
   # Install Humio CRDs
-  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioclusters.yaml"
-  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioexternalclusters.yaml"
-  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioingesttokens.yaml"
-  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioparsers.yaml"
-  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humiorepositories.yaml"
-  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioviews.yaml"
-  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioalerts.yaml"
-  execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioactions.yaml"
+  # execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioclusters.yaml"
+  # execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioexternalclusters.yaml"
+  # execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioingesttokens.yaml"
+  # execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioparsers.yaml"
+  # execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humiorepositories.yaml"
+  # execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioviews.yaml"
+  # execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioalerts.yaml"
+  # execlog "oc apply -f https://raw.githubusercontent.com/humio/humio-operator/humio-operator-$HUMIO_OPERATOR_VERSION/config/crd/bases/core.humio.com_humioactions.yaml"
 
   # Add Humio to Helm repo
   execlog "helm repo add humio-operator https://humio.github.io/humio-operator"
   execlog "helm repo update"
 
   # Install Humio Operator by Helm v3+
-  execlog "helm install humio-operator humio-operator/humio-operator --namespace $NAMESPACE_HUMIO --version $HUMIO_OPERATOR_VERSION --set openshift=true --set resources.limits.memory=500Mi"
+  execlog "helm install humio-operator humio-operator/humio-operator --namespace $NAMESPACE_HUMIO --version $HUMIO_OPERATOR_VERSION --set installCRDs=true --set openshift=true --set resources.limits.memory=500Mi"
 }
 
 function install-humio-cluster {
   # Create license
+  # Please note that the license file can be prepared through the installation process or beforehand.
   execlog "kubectl create secret generic humio-license --from-file=data=./_humio_license.txt"
   
   # Create Humio Cluster
@@ -64,7 +65,7 @@ function install-humio-post-actions {
 }
 
 function how-to-access-humio {
-  local url="$( oc get route -n $NAMESPACE_HUMIO humio-cluster -o json | jq -r .spec.host )"
+  local route="$( oc get route -n $NAMESPACE_HUMIO humio-cluster -o json | jq -r .spec.host )"
 
   if [[ "${HUMIO_WITH_LDAP_INTEGRATED}" == "true" ]]; then
     local password="secret"     # it's hardcoded in integration/ldap/ldif/*.ldif
@@ -72,7 +73,7 @@ function how-to-access-humio {
 
     log "========================================================"
     log "Since LDAP is integrated, all these accounts can be used to access Humio:"
-    log "- URL: $url"
+    log "- URL: http://$route"
     log "- password: secret"
     log "- admin users:"
     execlog "oc -n ldap exec $POD -- ldapsearch -LLL -x -H ldap:// -D \"cn=admin,dc=bright,dc=com\" -w $LDAP_ADMIN_PASSWORD -b \"ou=people,dc=bright,dc=com\" \"(uid=admin*)\" uid | grep \"uid:\" | cut -d: -f2"
@@ -85,7 +86,7 @@ function how-to-access-humio {
     
     log "========================================================"
     log "Here is the info for how to access Humio:"
-    log "- URL: $url"
+    log "- URL: http://$route"
     log "- username: $username"
     log "- password: $password"
     log "========================================================"
