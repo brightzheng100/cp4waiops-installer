@@ -33,7 +33,7 @@ function install-humio-operators {
 function install-humio-cluster {
   # Create license
   # Please note that the license file can be prepared through the installation process or beforehand.
-  execlog "kubectl create secret generic humio-license --from-file=data=./_humio_license.txt"
+  execlog "oc create secret generic humio-license --from-file=data=./_humio_license.txt"
   
   # Create Humio Cluster
   if [[ "${HUMIO_WITH_LDAP_INTEGRATED}" == "true" ]]; then 

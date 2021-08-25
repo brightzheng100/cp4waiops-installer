@@ -14,7 +14,8 @@ Currently there is a typical set of components included in this installation exp
 - OpenLDAP as the LDAP server, if required (~3mins)
 - Dependent OpenShift Serverless (~5mins)
 - AIOps, with `aiopsFoundation`, `aiManager` and ` applicationManager` components (~60mins)
-- Humio (~5mins)
+- Log Management System: Humio (~5mins), and/or OpenShift Logging (10~mins)
+- Turbonomic (10~mins)
 
 Please note that:
 1. By design, the scripts are fully modularized so you can cherry-pick and install the components you want;
@@ -23,13 +24,11 @@ Please note that:
 
 ## Get Started
 
-**Prerequisites**
+### 0. Prerequisites
 
 - CLI tools: `oc`, `helm` v3, and `jq`
 - You must be authenticated to your OpenShift cluster with admin permissions
 - [IBM Entitled Registry Key](https://myibm.ibm.com/products-services/containerlibrary)
-
-**Process**
 
 ### 1. Clone the repo and cd to the project folder
 
@@ -58,9 +57,15 @@ EOF
 
 **Important Notes:**
 
-To facilitate the retry UX, there is a way to skip some steps by exporting a list of `SKIP_STEPS`.
+To simplify things, all of the components are mandatory except below optional yet configurable ones:
 
-For example, `export SKIP_STEPS="CS LDAP SERVERLESS EXTENSIONS INFRA HUMIO"` is to instruct the installation process to skip installing anything except `AIOPS`. 
+- `Humio`: disabled by default, but you can enable it by `export HUMIO_ENABLED=true`;
+- `Turbonomic`: disabled by default, but you can enable it by `export TURBONOMIC_ENABLED=true`;
+- `OpenShift Logging`: disabled by default, but you can enable it by `export OPENSHIFT_LOGGING_ENABLED=true`;
+
+Meanwhile, to facilitate the retry UX, there is a way to skip some components by exporting a list of `SKIP_STEPS`.
+
+For example, `export SKIP_STEPS="CS LDAP SERVERLESS EXTENSIONS INFRA HUMIO OPENSHIFT_LOGGING"` is to instruct the installation process to skip installing anything except `AIOPS`. 
 
 The available named steps are:
 - `CS`: Common Services
@@ -69,10 +74,11 @@ The available named steps are:
 - `AIOPS`: AIOps with `aiopsFoundation`, `aiManager` and `applicationManager` components
 - `EXTENSIONS`: AIOps Extensions, if any
 - `INFRA`: Infrastructure Automation
-- `HUMIO`: Humio
+- `HUMIO`: Humio log management system
+- `OPENSHIFT_LOGGING`: OpenShift Logging (the EFK stack)
+- `TURBONOMIC`: Turbonomic application resource management system
 
-Please note that `Humio` is skipped by default as it requires a dedicated license file to be prepared.
-To include `Humio` by default, do this:
+`Humio` requires a dedicated license to be created as a secret for installation, we can explicitly put it as `./_humio_license.txt`, or otherwise you will be prompted for it if you've enabled it.
 
 ```sh
 # Copy your Humio license file as _humio_license.txt
@@ -81,15 +87,14 @@ $ cat ./_humio_license.txt
 # Tune some more parameters and add them into _customization.sh
 $ cat >> _customization.sh <<EOF
 #
-# Reset SKIP_STEPS to skip nothing
+# Enable Humio explicitly, as it's disabled by default
 #
-export SKIP_STEPS=""
+export HUMIO_ENABLED=true
 
 #
-# Humio
+# Optionally, to further spin up LDAP and integrate it with Humio
 #
-# Optionally, to further spin up LDAP and integrate with Humio
-export HUMIO_WITH_LDAP_INTEGRATED="true"
+export HUMIO_WITH_LDAP_INTEGRATED=true
 EOF
 ```
 

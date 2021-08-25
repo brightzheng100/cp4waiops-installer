@@ -111,7 +111,7 @@ fi
 # 
 ############################################################
 log "----------- 11. LDAP, only when required --------------"
-if [[ "$HUMIO_WITH_LDAP_INTEGRATED" == "true" ]]; then
+if [[ "$HUMIO_ENABLED" == "true" ]] && [[ "$HUMIO_WITH_LDAP_INTEGRATED" == "true" ]]; then
     if [[ " ${SKIP_STEPS[@]} " =~ " LDAP " ]]; then
         log "----------- SKIPPED --------------"
     else
@@ -227,50 +227,103 @@ fi
 
 ###
 #
-# 50. Humio
+# 5x. Logging Stacks
+# - 50 - Humio
+# - 51 - OpenShift Logging, which is EFK stack
 # 
 ############################################################
 humio_decision=false
 log "----------- 50. Humio --------------"
-if [[ " ${SKIP_STEPS[@]} " =~ " HUMIO " ]]; then
-    log "----------- SKIPPED --------------"
+if [[ "$HUMIO_ENABLED" == "false" ]]; then
+    log "----------- Humio is disabled, to enable it: export HUMIO_ENABLED=true --------------"
 else
-    # License
-    license_content=""
-    if [ -f "./_humio_license.txt" ]; then
-        license_content="$( cat ./_humio_license.txt)"
-        humio_decision=true
+    if [[ " ${SKIP_STEPS[@]} " =~ " HUMIO " ]]; then
+        log "----------- SKIPPED --------------"
     else
-        logn "there is no ./_humio_license.txt exists, you may try paste the license content here, then press enter: "
-        read license_content_answer
-        if [ "$license_content_answer" == "" ]; then
-            log "Skip Humio since no license provided!"
-        else
-            echo $license_content_answer > ./_humio_license.txt
+        # License
+        license_content=""
+        if [ -f "./_humio_license.txt" ]; then
+            license_content="$( cat ./_humio_license.txt)"
             humio_decision=true
+        else
+            logn "there is no ./_humio_license.txt exists, you may try paste the license content here, then press enter: "
+            read license_content_answer
+            if [ "$license_content_answer" == "" ]; then
+                log "Skip Humio since no license provided!"
+            else
+                echo $license_content_answer > ./_humio_license.txt
+                humio_decision=true
+            fi
         fi
-    fi
-    if [[ $humio_decision == true ]]; then
-        # Pre
-        install-humio-pre
-        # Install operators
-        install-humio-operators
-        # Wait for 2 mins
-        progress-bar 2
-        # Install Humio Cluster
-        install-humio-cluster
-        # Check pod process, with timeout of 15mins, and >=7pods expected
-        check-namespaced-pod-status $NAMESPACE_HUMIO 15 7
-        # Install CRs
-        install-humio-crs
-        # Post actions
-        install-humio-post-actions
-        # Expose Humio svc "humio-cluster" for both http and es port
-        oc expose svc humio-cluster -n $NAMESPACE_HUMIO --port="http"
-        oc expose svc humio-cluster -n $NAMESPACE_HUMIO --name=humio-cluster-es --port="es"
+        if [[ $humio_decision == true ]]; then
+            # Pre
+            install-humio-pre
+            # Install operators
+            install-humio-operators
+            # Wait for 2 mins
+            progress-bar 2
+            # Install Humio Cluster
+            install-humio-cluster
+            # Check pod process, with timeout of 15mins, and >=7pods expected
+            check-namespaced-pod-status $NAMESPACE_HUMIO 15 7
+            # Install CRs
+            install-humio-crs
+            # Post actions
+            install-humio-post-actions
+            # Expose Humio svc "humio-cluster" for both http and es port
+            oc expose svc humio-cluster -n $NAMESPACE_HUMIO --port="http"
+            oc expose svc humio-cluster -n $NAMESPACE_HUMIO --name=humio-cluster-es --port="es"
+        fi
     fi
 fi
 
+log "----------- 51. OpenShift Logging --------------"
+openshift_logging_decision=false
+if [[ "$OPENSHIFT_LOGGING_ENABLED" == "false" ]]; then
+    log "----------- OpenShift Logging is disabled, to enable it: export OPENSHIFT_LOGGING_ENABLED=true --------------"
+else
+    if [[ " ${SKIP_STEPS[@]} " =~ " OPENSHIFT_LOGGING " ]]; then
+        log "----------- SKIPPED --------------"
+    else
+        openshift_logging_decision=true
+        # Pre
+        install-openshift-logging-pre
+        # Install operators
+        install-openshift-logging-operators
+        # Check pod process, with timeout of 5mins, and >=1pods expected
+        check-namespaced-pod-status $NAMESPACE_OPENSHIFT_LOGGING 5 1
+        # Install CRs
+        install-openshift-logging-crs
+        # Check pod process, with timeout of 10mins, and >=10pods expected
+        check-namespaced-pod-status $NAMESPACE_OPENSHIFT_LOGGING 10 10
+        # Post actions
+        install-openshift-logging-post
+    fi
+fi
+
+log "----------- 60. Turbonomic --------------"
+turbonomic_decision=false
+if [[ "$TURBONOMIC_ENABLED" == "false" ]]; then
+    log "----------- Turbonomic is disabled, to enable it: export TURBONOMIC_ENABLED=true --------------"
+else
+    if [[ " ${SKIP_STEPS[@]} " =~ " TURBONOMIC " ]]; then
+        log "----------- SKIPPED --------------"
+    else
+        turbonomic_decision=true
+        # Pre
+        install-turbonomic-pre
+        # Install operators
+        install-turbonomic-operators
+        # Check pod process, with timeout of 5mins, and >=1pods expected
+        check-namespaced-pod-status $NAMESPACE_TURBONOMIC 5 1
+        # Install CRs
+        install-turbonomic-crs
+        # Check pod process, with timeout of 10mins, and >=10pods expected
+        check-namespaced-pod-status $NAMESPACE_TURBONOMIC 10 10
+        # Post actions
+        install-turbonomic-post
+    fi
+fi
 
 ###
 #
@@ -283,8 +336,19 @@ log "~~~~~~~~~~~~~~~~~~~~~~~~~~~ Conclusion ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 how-to-access-aiops-console
 
 # Display how to access Humio, if it's installed
-if [[ $humio_decision == true ]]; then
+if [[ "$HUMIO_ENABLED" == "true" ]] || [[ $humio_decision == true ]]; then
 how-to-access-humio
+fi
+
+# Display how to access Turbonoic, if it's installed
+if [[ "$TURBONOMIC_ENABLED" == "true" ]] || [[ $turbonomic_decision == true ]]; then
+how-to-access-turbonomic
+fi
+
+# Display how to access Kibana and expose necessary info for AIOps integration, if it's installed
+if [[ "$OPENSHIFT_LOGGING_ENABLED" == "true" ]] || [[ $openshift_logging_decision == true ]]; then
+how-to-access-openshift-logging-kibana
+how-to-integrate-with-aiops
 fi
 
 log "~~~~~~~~~~~~~~~~~~~~~~~~~~~ What's Next? ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

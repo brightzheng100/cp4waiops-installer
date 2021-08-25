@@ -35,7 +35,8 @@ export NAMESPACE_CS="${NAMESPACE_CS:-ibm-common-services}"
 export NAMESPACE_CP4WAIOPS="${NAMESPACE_CP4WAIOPS:-ibm-cp4waiops}"
 export NAMESPACE_HUMIO="${NAMESPACE_HUMIO:-humio}"
 export NAMESPACE_LDAP="${NAMESPACE_LDAP:-ldap}"
-export NAMESPACE_OPENSHIFT_LOGGING="${NAMESPACE_OPENSHIFT_LOGGING:-openshift-logging}"
+export NAMESPACE_OPENSHIFT_LOGGING="openshift-logging" # don't change for now
+export NAMESPACE_TURBONOMIC="turbonomic"
 
 #
 # StorageClass
@@ -51,6 +52,8 @@ export LDAP_ADMIN_PASSWORD="${LDAP_ADMIN_PASSWORD:-Passw0rd}"
 #
 # Humio
 #
+# Humio is disabled by default
+export HUMIO_ENABLED="${HUMIO_ENABLED:-false}"
 # Humio Operator Version
 export HUMIO_OPERATOR_VERSION="${HUMIO_OPERATOR_VERSION:-0.10.1}"
 # Variable to control whether to integrate with LDAP
@@ -60,5 +63,11 @@ export HUMIO_WITH_LDAP_INTEGRATED="${HUMIO_WITH_LDAP_INTEGRATED:-false}"
 #
 # OpenShift Logging
 #
-# Humio Operator Version
-export HUMIO_OPERATOR_VERSION="${HUMIO_OPERATOR_VERSION:-0.10.1}"
+# OpenShift Logging is disabled by default
+export OPENSHIFT_LOGGING_ENABLED="${OPENSHIFT_LOGGING_ENABLED:-false}"
+
+#
+# Turbonomic
+#
+# Turbonomic is disabled by default
+export TURBONOMIC_ENABLED="${TURBONOMIC_ENABLED:-false}"
