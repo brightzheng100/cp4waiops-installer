@@ -13,7 +13,7 @@ function install-turbonomic-operators {
   execlog "envsubst < integration/turbonomic/turbonomic-operators.yaml | oc apply -f -"
 
   # Grant permission to sa
-  execlog "oc -n $NAMESPACE_TURBONOMIC adm policy add-scc-to-group anyuid system:serviceaccounts:turbonomic"
+  execlog "oc -n $NAMESPACE_TURBONOMIC adm policy add-scc-to-group anyuid system:serviceaccounts:$NAMESPACE_TURBONOMIC"
 }
 
 function install-turbonomic-crs {
@@ -22,11 +22,11 @@ function install-turbonomic-crs {
 }
 
 function install-turbonomic-post-actions {
-
+  # Nothing here yet
 }
 
 function how-to-access-turbonomic {
-  local route="$( oc get route -n $NAMESPACE_TURBONOMIC http-api -o json | jq -r .spec.host )"
+  local route="$( oc get route -n $NAMESPACE_TURBONOMIC api -o json | jq -r .spec.host )"
 
   log "========================================================"
   log "Here is the info for how to acess Turbonomic:"
