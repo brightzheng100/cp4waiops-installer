@@ -5,6 +5,18 @@ source lib/status.sh
 source lib/status.sh
 source 00-setup.sh
 
+# 60 - Turbonomic
+function uninstall-turbonomic {
+    # CRs
+    envsubst < integration/turbonomic/turbonomic-cr.yaml | oc delete -f -
+    # Operator
+    envsubst < integration/turbonomic/turbonomic-operators.yaml | oc delete -f -
+    # Project
+    oc delete project $NAMESPACE_TURBONOMIC
+}
+
+# 51 - OpenShift Logging
+
 # 50 - Humio
 function uninstall-humio {
     # Humio Cluster
