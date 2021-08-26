@@ -297,7 +297,7 @@ else
         # Check pod process, with timeout of 10mins, and >=10pods expected
         check-namespaced-pod-status $NAMESPACE_OPENSHIFT_LOGGING 10 10
         # Post actions
-        install-openshift-logging-post
+        install-openshift-logging-post-actions
     fi
 fi
 
@@ -321,7 +321,7 @@ else
         # Check pod process, with timeout of 10mins, and >=10pods expected
         check-namespaced-pod-status $NAMESPACE_TURBONOMIC 10 10
         # Post actions
-        install-turbonomic-post
+        install-turbonomic-post-actions
     fi
 fi
 

@@ -18,7 +18,7 @@ function install-openshift-logging-crs {
   execlog 'envsubst < integration/openshift-logging/openshift-logging-cr.yaml | oc apply -f -'
 }
 
-function install-openshift-logging-post {
+function install-openshift-logging-post-actions {
   # Expose elasticsearch svc as route
   execlog "oc -n $NAMESPACE_OPENSHIFT_LOGGING expose svc elasticsearch"
   oc get service elasticsearch -o jsonpath={.spec.clusterIP} -n openshift-logging
